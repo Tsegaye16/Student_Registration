@@ -17,6 +17,9 @@ import {
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 
+import { jwtDecode } from "jwt-decode";
+import { signin } from "../../../redux/action/auth";
+
 const { Title } = Typography;
 
 const initialState = {
@@ -25,7 +28,30 @@ const initialState = {
 };
 
 const Login: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState(initialState);
+
+  const token = localStorage.getItem("user");
+
+  useEffect(() => {
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      if (decodedToken.exp * 1000 > new Date().getTime()) {
+        navigate("/manager");
+      }
+    }
+  }, [dispatch, navigate, token]);
+
+  const handleSubmit = async (values: any) => {
+    const response = await dispatch(signin(values, navigate) as any);
+
+    if (response?.error) {
+      message.error(`${response.error}`);
+    } else if (response?.payload?.message) {
+      message.success(`${response?.payload?.message}`);
+    }
+  };
 
   return (
     <div
@@ -54,7 +80,12 @@ const Login: React.FC = () => {
           <Title level={3}>Sign In</Title>
         </div>
 
-        <Form name="login" initialValues={formData} layout="vertical">
+        <Form
+          name="login"
+          onFinish={handleSubmit}
+          initialValues={formData}
+          layout="vertical"
+        >
           {/* Email Field */}
           <Form.Item
             label="Email Address"

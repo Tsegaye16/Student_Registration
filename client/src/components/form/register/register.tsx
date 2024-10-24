@@ -11,9 +11,7 @@ import {
 import { LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
-//import "./../form.css";
-//import { signup } from "../../../redux/action/auth";
+import { signup } from "../../../redux/action/auth";
 
 const { Title, Link } = Typography;
 
@@ -25,6 +23,18 @@ const initialState = {
 
 const Registration = () => {
   const [formData, setFormData] = useState(initialState);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onFinish = async (values: any) => {
+    const response = await dispatch(signup(values, navigate) as any);
+
+    if (response?.error) {
+      message.error(`${response.error}`);
+    } else if (response?.payload?.message) {
+      message.success(`${response?.payload?.message}`);
+    }
+  };
 
   return (
     <div
@@ -56,7 +66,7 @@ const Registration = () => {
           name="registration"
           layout="vertical"
           initialValues={formData}
-          // onFinish={onFinish}
+          onFinish={onFinish}
           autoComplete="off"
         >
           <Form.Item

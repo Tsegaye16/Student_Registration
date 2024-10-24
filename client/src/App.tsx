@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import "./App.css";
 import Home from "./components/home";
@@ -7,6 +7,7 @@ import Home from "./components/home";
 import Dashboard from "./pages/admin/dashboard/dashboard";
 import Login from "./components/form/login/login";
 import Registration from "./components/form/register/register";
+import EmailConfirm from "./components/form/emailConfirm";
 
 const App: React.FC = () => {
   return (
@@ -15,9 +16,10 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
 
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/confirm-email" element={<EmailConfirm />} />
 
-        <Route path="/manager" element={<Dashboard />} />
+        <Route path="/admin" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );

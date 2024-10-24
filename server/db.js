@@ -20,7 +20,7 @@ async function createDatabase() {
     host: DB_HOST,
     password: DB_PASSWORD,
     port: DB_PORT,
-    database: "postgres", // Connect to the default 'postgres' database to check for the target database
+    database: "postgres",
   });
 
   try {

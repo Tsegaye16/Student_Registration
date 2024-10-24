@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Layout,
   Menu,
@@ -20,7 +20,14 @@ import {
   InboxOutlined,
   UnorderedListOutlined,
   UserOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { LOGOUT } from "../../../constant/actionType";
+import { jwtDecode } from "jwt-decode";
+import { getUserById } from "../../../redux/action/user";
+import Profile from "./profile";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -36,8 +43,44 @@ const Dashboard = () => {
   const [selectedEditQuestion, setSelectedEditQuestion] = useState(null);
   const [feedbackDetail, setFeedbackDetail] = useState(null);
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const token = localStorage.getItem("user");
+
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
+  };
+
+  const handleLogout = async () => {
+    await dispatch({ type: LOGOUT });
+    localStorage.removeItem("user");
+    //notification.warning({ message: "You are logged out" });
+    navigate("/");
+  };
+
+  const user = useSelector((state: any) => state.user?.user?.newUser);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+
+      if (decodedToken.exp * 1000 < new Date().getTime()) {
+        handleLogout();
+      }
+      dispatch(getUserById(decodedToken.id) as any);
+    }
+  }, [dispatch, navigate, token]);
+
+  const onUpdate = async () => {
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      const data = await dispatch(getUserById(decodedToken.id) as any);
+      return data;
+    }
+    return;
   };
 
   const handleMenuItemClick = (item: string) => {
@@ -62,7 +105,7 @@ const Dashboard = () => {
       {/* <Menu.Item key="setting" icon={<SettingOutlined />}>
         Settings
       </Menu.Item> */}
-      <Menu.Item key="3" icon={<LogoutOutlined />}>
+      <Menu.Item key="3" icon={<LogoutOutlined />} onClick={handleLogout}>
         Logout
       </Menu.Item>
     </Menu>
@@ -92,26 +135,11 @@ const Dashboard = () => {
             Dashboard
           </Menu.Item>
 
-          <Menu.SubMenu
-            key="Serveys"
-            title="Serveys"
-            icon={<UnorderedListOutlined />}
-            onTitleClick={handleServeysClick}
-          >
-            <Menu.Item
-              key="Published"
-              icon={<FileDoneOutlined />}
-              style={{ userSelect: "none" }}
-            >
-              Published
-            </Menu.Item>
-            <Menu.Item key="Draft" icon={<InboxOutlined />}>
-              Draft
-            </Menu.Item>
-          </Menu.SubMenu>
-
-          <Menu.Item key="FeedBacks" icon={<NotificationOutlined />}>
-            Feedbacks
+          <Menu.Item key="Student" icon={<UserOutlined />}>
+            Student
+          </Menu.Item>
+          <Menu.Item key="Course" icon={<BookOutlined />}>
+            Course
           </Menu.Item>
         </Menu>
       </Sider>
@@ -154,9 +182,12 @@ const Dashboard = () => {
               </Badge>
 
               <Dropdown overlay={menu} trigger={["click"]}>
-                <Avatar src="" style={{ cursor: "pointer" }} />
+                <Avatar
+                  src={`http://localhost:4000/${user?.image}`}
+                  style={{ cursor: "pointer" }}
+                />
               </Dropdown>
-              <Title level={5}>User</Title>
+              <Title level={5}>{user?.name}</Title>
             </div>
           </div>
         </Header>
@@ -164,11 +195,13 @@ const Dashboard = () => {
         <Content style={{ margin: "16px" }}>
           <>
             {selectedItem === "Dashboard" && <div>Dashboard</div>}
-            {selectedItem === "Published" && <div>Published</div>}
-            {selectedItem === "Draft" && <div>Draft</div>}
-            {selectedItem === "FeedBacks" && <div>feed back</div>}
-            {selectedItem === "setting" && <div>setting</div>}
+            {selectedItem === "Student" && <div>Student</div>}
+            {selectedItem === "Course" && <div>Course</div>}
+
             {selectedItem === "profile" && <div>profile</div>}
+            {selectedItem === "profile" && (
+              <Profile user={user} onUpdate={onUpdate} />
+            )}
           </>
         </Content>
       </Layout>
