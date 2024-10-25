@@ -40,7 +40,7 @@ export const signin =
       const response = await api.signIn(formData); // API call to backend
       const data = await dispatch({ type: SIGNIN, payload: response.data });
 
-      navigate("/manager");
+      navigate("/admin");
       return data;
     } catch (err: any) {
       const errorMessage =

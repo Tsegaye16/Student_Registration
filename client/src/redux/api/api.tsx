@@ -5,7 +5,6 @@ const API = axios.create({
 });
 
 export const signIn = async (formData: any) => API.post("/signin", formData);
-
 export const signUp = async (formData: any) => API.post("/signup", formData);
 
 export const getUserById = async (userId: string) =>
@@ -19,3 +18,10 @@ export const changePassword = async (password: any) =>
 
 export const emailConfirmation = async (token: any) =>
   API.get(`/confirm-email/${token}`);
+
+export const getAllCourse = async () => API.get("/getallcourse");
+export const addCourse = async (courseData: any) =>
+  API.post("/addCourse", courseData);
+
+export const deleteCourse = async (id: string[]) =>
+  API.delete("/deleteCourse", { data: id });

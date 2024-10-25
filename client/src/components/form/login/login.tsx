@@ -38,7 +38,7 @@ const Login: React.FC = () => {
     if (token) {
       const decodedToken: any = jwtDecode(token);
       if (decodedToken.exp * 1000 > new Date().getTime()) {
-        navigate("/manager");
+        navigate("/admin");
       }
     }
   }, [dispatch, navigate, token]);

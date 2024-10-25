@@ -14,7 +14,7 @@ export const getUserById = (userId: string) => async (dispatch: any) => {
       type: GET_USER_BY_ID,
       payload: response.data,
     });
-
+    console.log("data: ", data);
     return data;
   } catch (err: any) {
     const errorMessage = err.response?.data?.message || "Something went wrong";

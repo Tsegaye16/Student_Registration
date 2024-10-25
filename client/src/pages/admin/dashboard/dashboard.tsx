@@ -16,9 +16,6 @@ import {
   NotificationOutlined,
   //  SettingOutlined,
   LogoutOutlined,
-  FileDoneOutlined,
-  InboxOutlined,
-  UnorderedListOutlined,
   UserOutlined,
   BookOutlined,
 } from "@ant-design/icons";
@@ -28,6 +25,9 @@ import { LOGOUT } from "../../../constant/actionType";
 import { jwtDecode } from "jwt-decode";
 import { getUserById } from "../../../redux/action/user";
 import Profile from "./profile";
+import Student from "./student";
+import Course from "./course";
+import AddCourse from "./addCourse";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -35,13 +35,13 @@ const { Title } = Typography;
 const Dashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedItem, setSelectedItem] = useState("Dashboard");
-  const [isServeysOpen, setIsServeysOpen] = useState(false);
-  const [selectedAddSurvey, setSelectedAddSurvey] = useState(null);
-  const [selectedDetail, setSelectedDetail] = useState(null);
-  const [selectedAddCompany, setSelectedAddCompany] = useState(null);
-  const [selectedAddQuestion, setSelectedAddQuestion] = useState(null);
-  const [selectedEditQuestion, setSelectedEditQuestion] = useState(null);
-  const [feedbackDetail, setFeedbackDetail] = useState(null);
+  //const [isServeysOpen, setIsServeysOpen] = useState(false);
+  const [selectedAddCourse, setSelectedAddCourse] = useState(false);
+  //const [selectedDetail, setSelectedDetail] = useState(null);
+  //const [selectedAddCompany, setSelectedAddCompany] = useState(null);
+  //const [selectedAddQuestion, setSelectedAddQuestion] = useState(null);
+  //const [selectedEditQuestion, setSelectedEditQuestion] = useState(null);
+  //const [feedbackDetail, setFeedbackDetail] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -59,6 +59,7 @@ const Dashboard = () => {
   };
 
   const user = useSelector((state: any) => state.user?.user?.newUser);
+  console.log("User: ", user);
 
   useEffect(() => {
     if (!token) {
@@ -83,18 +84,16 @@ const Dashboard = () => {
     return;
   };
 
-  const handleMenuItemClick = (item: string) => {
+  const handleMenuItemClick = (item: any) => {
     setSelectedItem(item);
-    setSelectedDetail(null);
-    setSelectedAddCompany(null);
-    setSelectedAddQuestion(null);
-    setSelectedEditQuestion(null);
-    setSelectedAddSurvey(null);
-    setFeedbackDetail(null);
+    setSelectedAddCourse(false);
+  };
+  const handleAddCourse = () => {
+    setSelectedAddCourse(true);
   };
 
-  const handleServeysClick = () => {
-    setIsServeysOpen(!isServeysOpen);
+  const handleCancel = () => {
+    setSelectedAddCourse(false);
   };
 
   const menu = (
@@ -122,7 +121,7 @@ const Dashboard = () => {
       >
         <div className="logo" style={{ padding: "16px", textAlign: "center" }}>
           <Avatar src="" />
-          <Title level={5}>company</Title>
+          <Title level={5}>ፎርሲዝን</Title>
         </div>
 
         <Menu
@@ -193,16 +192,21 @@ const Dashboard = () => {
         </Header>
 
         <Content style={{ margin: "16px" }}>
-          <>
-            {selectedItem === "Dashboard" && <div>Dashboard</div>}
-            {selectedItem === "Student" && <div>Student</div>}
-            {selectedItem === "Course" && <div>Course</div>}
+          {selectedAddCourse ? (
+            <AddCourse onSave={handleCancel} />
+          ) : (
+            <>
+              {selectedItem === "Dashboard" && <div>Dashboard</div>}
+              {selectedItem === "Student" && <Student />}
+              {selectedItem === "Course" && (
+                <Course onAddCourse={handleAddCourse} />
+              )}
 
-            {selectedItem === "profile" && <div>profile</div>}
-            {selectedItem === "profile" && (
-              <Profile user={user} onUpdate={onUpdate} />
-            )}
-          </>
+              {selectedItem === "profile" && (
+                <Profile user={user} onUpdate={onUpdate} />
+              )}
+            </>
+          )}
         </Content>
       </Layout>
     </Layout>
