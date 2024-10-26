@@ -1,65 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Button, Table, Space, Popconfirm, message, Typography } from "antd";
-import { deleteCourse, getAllCourse } from "../../../redux/action/course";
+import { useSelector, useDispatch } from "react-redux";
+import { Button, message, Popconfirm, Space, Table, Typography } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
-  InfoCircleOutlined,
   PlusOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 import { TableRowSelection } from "antd/es/table/interface";
-
+import { deleteStudent, getAllStudent } from "../../../redux/action/student";
 const { Title } = Typography;
 
-interface propType {
-  onAddCourse: any;
-  onEditCourse: any;
+interface props {
+  onAddStudent: any;
 }
 
-const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
+const ActiveStudent: React.FC<props> = ({ onAddStudent }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const students = useSelector(
+    (state: any) => state.student?.studentData?.result
+  );
 
-  const courses = useSelector((state: any) => state.course?.courseData?.result);
-
-  // General delete handler for both single and multiple deletions
-  const confirmDelete = async (courseIds: string[]) => {
-    const response = await dispatch(deleteCourse(courseIds) as any);
+  const confirmDelete = async (studentIds: string[]) => {
+    const response = await dispatch(deleteStudent(studentIds) as any);
     if (response?.error) {
       message.error(`${response.error}`);
     } else if (response?.payload?.message) {
-      message.success(`${courseIds.length} course(s) deleted successfully`);
+      message.success(`${studentIds.length} course(s) deleted successfully`);
       setSelectedRowKeys([]); // Clear selection after deletion
     }
 
     //dispatch(getAllCourse() as any);
   };
-  // Fetch all courses on component mount
+
   useEffect(() => {
-    dispatch(getAllCourse() as any);
+    dispatch(getAllStudent() as any);
   }, [dispatch]);
 
-  // Columns definition for the course table
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
-      render: (price: number) => `${price} Birr`, // Format price
-    },
-    {
-      title: "Duration",
-      dataIndex: "duration",
-      key: "duration",
-      render: (duration: string) => `${duration}`, // Format duration
-    },
+  const column = [
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
     {
       title: "Action",
       key: "action",
@@ -68,22 +48,25 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
           <Button
             icon={<EditOutlined />}
             type="link"
-            //onClick={() => navigate(`/courses/edit/${record.id}`)}
-            onClick={(event) => {
-              event.stopPropagation();
-              onEditCourse(record);
-            }}
+
+            // onClick={(event) => {
+            //   event.stopPropagation();
+            //   onEditCourse(record);
+            // }}
           >
             Edit
           </Button>
           <Popconfirm
-            title="Are you sure you want to delete this course?"
+            title="Are you sure you want to delete this student?"
             onConfirm={() => confirmDelete([record.id])} // Send single ID in an array
             okText="Yes"
             cancelText="No"
           >
             <Button type="link" icon={<DeleteOutlined />} danger>
               Delete
+            </Button>
+            <Button type="link" icon={<InfoCircleOutlined />}>
+              Detail
             </Button>
           </Popconfirm>
         </Space>
@@ -112,16 +95,17 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
           marginBottom: "16px",
         }}
       >
-        <Title level={5}>Courses</Title>
+        <Title level={5}>Student List</Title>
+
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={(event) => {
             event.stopPropagation();
-            onAddCourse(true);
+            onAddStudent(true);
           }}
         >
-          Add New Course
+          Register student
         </Button>
       </div>
       <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
@@ -131,7 +115,7 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
 
         {selectedRowKeys.length > 0 && (
           <Popconfirm
-            title="Are you sure you want to delete selected courses?"
+            title="Are you sure you want to delete selected students?"
             onConfirm={() => confirmDelete(selectedRowKeys as string[])}
             okText="Yes"
             cancelText="No"
@@ -142,8 +126,8 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
       </div>
       <Table
         rowSelection={rowSelection}
-        columns={columns}
-        dataSource={courses}
+        columns={column}
+        dataSource={students}
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ x: "max-content" }}
@@ -152,4 +136,4 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
   );
 };
 
-export default Course;
+export default ActiveStudent;

@@ -13,7 +13,11 @@ import {
   deleteCourse,
   updateCourse,
 } from "../controllers/courseController.js";
-import { getAllStudent } from "../controllers/studentController.js";
+import {
+  getAllStudent,
+  addStudent,
+  deleteStudent,
+} from "../controllers/studentController.js";
 import upload from "../config/multerConfig.js";
 
 const router = express.Router();
@@ -33,7 +37,8 @@ router.route("/updateCourse/:id").put(updateCourse);
 
 // Student route
 
-//router.route("/addStudent").post(addStudent);
+router.route("/addStudent").post(addStudent);
 router.route("/getAllStudent").get(getAllStudent);
+router.route("/deleteStudent").delete(deleteStudent);
 
 export default router;

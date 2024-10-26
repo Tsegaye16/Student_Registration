@@ -1,18 +1,16 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  CHANGE_PASSWORD,
-  GET_USER_BY_ID,
-  UPDATE_PROFILE,
+  GET_ALL_STUDENT,
+  ADD_STUDENT,
+  DELETE_STUDENT,
 } from "../../constant/actionType";
 import * as api from "../api/api";
 
-// Thunk action to get user by ID
-export const getUserById = createAsyncThunk(
-  GET_USER_BY_ID,
-  async (id: any, { rejectWithValue }) => {
+export const getAllStudent = createAsyncThunk(
+  GET_ALL_STUDENT,
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await api.getUserById(id);
-
+      const response = await api.getAllStudent();
       return response.data;
     } catch (error: any) {
       const errorMessage =
@@ -22,12 +20,11 @@ export const getUserById = createAsyncThunk(
   }
 );
 
-// Thunk action to update user profile
-export const updateProfile = createAsyncThunk(
-  UPDATE_PROFILE,
-  async ({ id, data }: { id: any; data: any }, { rejectWithValue }) => {
+export const addStudent = createAsyncThunk(
+  ADD_STUDENT,
+  async (data: any, { rejectWithValue }) => {
     try {
-      const response = await api.updateProfile(id, data);
+      const response = await api.addStudent(data);
       return response.data;
     } catch (error: any) {
       const errorMessage =
@@ -37,12 +34,11 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
-// Thunk action to change user password
-export const changePassword = createAsyncThunk(
-  CHANGE_PASSWORD,
-  async (password: any, { rejectWithValue }) => {
+export const deleteStudent = createAsyncThunk(
+  DELETE_STUDENT,
+  async (id: string[], { rejectWithValue }) => {
     try {
-      const response = await api.changePassword(password);
+      const response = await api.deleteStudent(id);
       return response.data;
     } catch (error: any) {
       const errorMessage =

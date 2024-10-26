@@ -10,3 +10,7 @@ export const GET_ALL_COURSE = "GET_ALL_COURSE";
 export const ADD_COURSE = "ADD_COURSE";
 export const DELETE_COURSE = "DELETE_COURSE";
 export const UPDATE_COURSE_BY_ID = "UPDATE_COURSE_BY_ID";
+
+export const GET_ALL_STUDENT = "GET_ALL_STUDENT";
+export const ADD_STUDENT = "ADD_STUDENT";
+export const DELETE_STUDENT = "DELETE_STUDENT";

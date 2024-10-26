@@ -16,8 +16,11 @@ import {
   NotificationOutlined,
   //  SettingOutlined,
   LogoutOutlined,
-  UserOutlined,
   BookOutlined,
+  UserOutlined,
+  CheckCircleOutlined,
+  TrophyOutlined,
+  ClockCircleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +32,10 @@ import Student from "../student/student";
 import Course from "../course/course";
 import AddCourse from "../course/addCourse";
 import EditCourse from "../course/editCourse";
+import AddStudent from "../student/addStudent";
+import ActiveStudent from "../student/activeStudent";
+import GraduatedStudent from "../student/graduatedStudent";
+import Attendance from "../Attendance/attendance";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -36,13 +43,14 @@ const { Title } = Typography;
 const Dashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedItem, setSelectedItem] = useState("Dashboard");
-  //const [isServeysOpen, setIsServeysOpen] = useState(false);
+  const [isStudentsOpen, setIsStudentsOpen] = useState(false);
   const [selectedAddCourse, setSelectedAddCourse] = useState(false);
   const [selectEditCourse, setSelectEditCourse] = useState<any>({
     name: "",
     duration: "",
     price: "",
   });
+  const [selectAddStudent, setSelectAddStudent] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -52,6 +60,9 @@ const Dashboard = () => {
     setCollapsed(!collapsed);
   };
 
+  const handleStudentsClick = () => {
+    setIsStudentsOpen(!isStudentsOpen);
+  };
   const handleLogout = async () => {
     await dispatch({ type: LOGOUT });
     localStorage.removeItem("user");
@@ -92,6 +103,7 @@ const Dashboard = () => {
       price: "",
       duration: "",
     });
+    setSelectAddStudent(false);
   };
   const handleAddCourse = () => {
     setSelectedAddCourse(true);
@@ -106,8 +118,13 @@ const Dashboard = () => {
     setSelectEditCourse(id);
   };
 
+  const handleAddStudent = () => {
+    setSelectAddStudent(true);
+  };
+
   const handleCancel = () => {
     setSelectedAddCourse(false);
+    setSelectAddStudent(false);
     setSelectEditCourse({
       name: "",
       duration: "",
@@ -157,8 +174,28 @@ const Dashboard = () => {
             Dashboard
           </Menu.Item>
 
-          <Menu.Item key="Student" icon={<UserOutlined />}>
-            Student
+          <Menu.SubMenu
+            key="Students"
+            title="Students"
+            icon={<UserOutlined />} // Icon representing a person or user, suitable for "Students"
+            onTitleClick={handleStudentsClick}
+          >
+            <Menu.Item
+              key="Active"
+              icon={<CheckCircleOutlined />} // Represents active or ongoing status
+              style={{ userSelect: "none" }}
+            >
+              Active Student
+            </Menu.Item>
+            <Menu.Item
+              key="Graduated"
+              icon={<TrophyOutlined />} // Represents achievement or completion, suitable for "Graduated Student"
+            >
+              Graduated Student
+            </Menu.Item>
+          </Menu.SubMenu>
+          <Menu.Item key="Attendance" icon={<ClockCircleOutlined />}>
+            Attendance
           </Menu.Item>
           <Menu.Item key="Course" icon={<BookOutlined />}>
             Course
@@ -199,10 +236,6 @@ const Dashboard = () => {
                 paddingRight: "20px",
               }}
             >
-              <Badge count={4}>
-                <NotificationOutlined style={{ fontSize: "24px" }} />
-              </Badge>
-
               <Dropdown overlay={menu} trigger={["click"]}>
                 <Avatar
                   src={`http://localhost:4000/${user?.image}`}
@@ -219,10 +252,14 @@ const Dashboard = () => {
             <AddCourse onSave={handleCancel} />
           ) : !isSelectEditCourseEmpty ? (
             <EditCourse courseInfo={selectEditCourse} onSave={handleCancel} />
+          ) : selectAddStudent ? (
+            <AddStudent onSave={handleCancel} />
           ) : (
             <>
               {selectedItem === "Dashboard" && <div>Dashboard</div>}
-              {selectedItem === "Student" && <Student />}
+              {selectedItem === "Student" && (
+                <Student onAddStudent={handleAddStudent} />
+              )}
               {selectedItem === "Course" && (
                 <Course
                   onAddCourse={handleAddCourse}
@@ -233,6 +270,11 @@ const Dashboard = () => {
               {selectedItem === "profile" && (
                 <Profile user={user} onUpdate={onUpdate} />
               )}
+              {selectedItem === "Active" && (
+                <ActiveStudent onAddStudent={handleAddStudent} />
+              )}
+              {selectedItem === "Graduated" && <GraduatedStudent />}
+              {selectedItem === "Attendance" && <Attendance />}
             </>
           )}
         </Content>

@@ -101,3 +101,28 @@ export const updateCourse = async (id: string, data: any) => {
     throw error;
   }
 };
+
+export const getAllStudent = async () => {
+  try {
+    return await API.get("/getAllStudent");
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addStudent = async (data: any) => {
+  try {
+    return await API.post("/addStudent", data);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteStudent = async (id: string[]) => {
+  try {
+    return await API.delete("/deleteStudent", { data: { ids: id } });
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    throw error;
+  }
+};
