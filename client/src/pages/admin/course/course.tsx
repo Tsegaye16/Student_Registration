@@ -13,34 +13,31 @@ import { TableRowSelection } from "antd/es/table/interface";
 
 interface propType {
   onAddCourse: any;
+  onEditCourse: any;
 }
 
-const Course: React.FC<propType> = ({ onAddCourse }) => {
+const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const courses =
-    useSelector((state: any) => state.course?.courseData?.result) || [];
-
-  console.log("courses: ", courses);
-  // Fetch all courses on component mount
-  useEffect(() => {
-    dispatch(getAllCourse() as any);
-  }, [dispatch]);
+  const courses = useSelector((state: any) => state.course?.courseData?.result);
 
   // General delete handler for both single and multiple deletions
   const confirmDelete = async (courseIds: string[]) => {
-    console.log("courseIds: ", courseIds);
     const response = await dispatch(deleteCourse(courseIds) as any);
     if (response?.error) {
       message.error(`${response.error}`);
     } else if (response?.payload?.message) {
       message.success(`${courseIds.length} course(s) deleted successfully`);
+      setSelectedRowKeys([]); // Clear selection after deletion
     }
 
-    setSelectedRowKeys([]); // Clear selection after deletion
-    dispatch(getAllCourse() as any);
+    //dispatch(getAllCourse() as any);
   };
+  // Fetch all courses on component mount
+  useEffect(() => {
+    dispatch(getAllCourse() as any);
+  }, [dispatch]);
 
   // Columns definition for the course table
   const columns = [
@@ -67,16 +64,13 @@ const Course: React.FC<propType> = ({ onAddCourse }) => {
       render: (text: any, record: any) => (
         <Space size="middle">
           <Button
-            icon={<InfoCircleOutlined />}
-            type="link"
-            onClick={() => navigate(`/courses/${record.id}`)}
-          >
-            Detail
-          </Button>
-          <Button
             icon={<EditOutlined />}
             type="link"
-            onClick={() => navigate(`/courses/edit/${record.id}`)}
+            //onClick={() => navigate(`/courses/edit/${record.id}`)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onEditCourse(record);
+            }}
           >
             Edit
           </Button>
@@ -132,14 +126,7 @@ const Course: React.FC<propType> = ({ onAddCourse }) => {
         {hasSelected && (
           <span>{`Selected ${selectedRowKeys.length} item(s)`}</span>
         )}
-        {selectedRowKeys.length === 1 && (
-          <Button
-            disabled={!hasSelected}
-            onClick={() => navigate(`/courses/edit/${selectedRowKeys[0]}`)}
-          >
-            Edit
-          </Button>
-        )}
+
         {selectedRowKeys.length > 0 && (
           <Popconfirm
             title="Are you sure you want to delete selected courses?"

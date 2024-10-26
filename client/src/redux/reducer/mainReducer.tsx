@@ -1,10 +1,8 @@
 import { combineReducers } from "redux";
-
 import authReducer from "./auth";
 import userReducer from "./user";
 import courseReducer from "./course";
-
-import { LOGOUT } from "../../constant/actionType";
+import { logOut } from "./auth"; // Import logOut action for resetting state
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -13,11 +11,9 @@ const appReducer = combineReducers({
 });
 
 const rootReducer = (state: any, action: any) => {
-  if (action.type === LOGOUT) {
-    // Reset all state to initial values
-    state = undefined;
+  if (action.type === logOut.type) {
+    state = undefined; // Reset all state to initial values
   }
-
   return appReducer(state, action);
 };
 

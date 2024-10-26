@@ -11,7 +11,9 @@ import {
   addCourse,
   getAllCourse,
   deleteCourse,
+  updateCourse,
 } from "../controllers/courseController.js";
+import { getAllStudent } from "../controllers/studentController.js";
 import upload from "../config/multerConfig.js";
 
 const router = express.Router();
@@ -26,6 +28,12 @@ router.route("/changepassword").put(changePassword);
 // Course route
 router.route("/addCourse").post(addCourse);
 router.route("/getAllCourse").get(getAllCourse);
-router.route("/deleteCourse/").delete(deleteCourse);
+router.route("/deleteCourse").delete(deleteCourse);
+router.route("/updateCourse/:id").put(updateCourse);
+
+// Student route
+
+//router.route("/addStudent").post(addStudent);
+router.route("/getAllStudent").get(getAllStudent);
 
 export default router;

@@ -41,8 +41,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
 
   // State for user data
   const [userData, setUserData] = useState<{
-    name: any;
-    email: any;
+    name: string;
+    email: string;
     image: any;
   }>({
     name: "",
@@ -86,7 +86,9 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
       formData.append("image", userData.image);
     }
 
-    const response = await dispatch(updateProfile(user.id, formData) as any);
+    const response = await dispatch(
+      updateProfile({ id: user.id, data: formData }) as any
+    );
 
     if (response?.payload) {
       setUserData({

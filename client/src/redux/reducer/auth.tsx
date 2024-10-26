@@ -1,3 +1,4 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   EMAIL_CONFIRMATION,
   LOGOUT,
@@ -5,26 +6,37 @@ import {
   SIGNUP,
 } from "../../constant/actionType";
 
-// Define the initial state
-const initialState = {
+interface AuthState {
+  authData: any | null; // Replace `any` with your actual auth data type
+}
+
+const initialState: AuthState = {
   authData: null,
 };
 
-const authReducer = (state = initialState, action: any) => {
-  switch (action.type) {
-    case SIGNIN:
-      localStorage.setItem("user", action.payload.token);
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    signIn: (state, action: PayloadAction<any>) => {
+      //localStorage.setItem("user", action.payload.token);
+      state.authData = action.payload;
+    },
+    logOut: (state) => {
+      localStorage.removeItem("user");
+      state.authData = null;
+    },
+    signUp: (state, action: PayloadAction<any>) => {
+      state.authData = action.payload;
+    },
+    emailConfirmation: (state, action: PayloadAction<any>) => {
+      state.authData = action.payload;
+    },
+  },
+});
 
-      return { ...state, authData: action?.payload };
-    case LOGOUT:
-      return { ...state, authData: null };
-    case SIGNUP:
-      return { ...state, authData: action?.payload };
-    case EMAIL_CONFIRMATION:
-      return { ...state, authData: action?.payload };
-    default:
-      return state;
-  }
-};
+// Export actions
+export const { signIn, logOut, signUp, emailConfirmation } = authSlice.actions;
 
-export default authReducer;
+// Export reducer
+export default authSlice.reducer;

@@ -1,3 +1,4 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   CHANGE_PASSWORD,
   GET_USER_BY_ID,
@@ -6,49 +7,82 @@ import {
 import * as api from "../api/api";
 
 // Thunk action to get user by ID
-export const getUserById = (userId: string) => async (dispatch: any) => {
-  try {
-    const response = await api.getUserById(userId);
+export const getUserById = createAsyncThunk(
+  GET_USER_BY_ID,
+  async (id: any, { rejectWithValue }) => {
+    try {
+      const response = await api.getUserById(id);
 
-    const data = await dispatch({
-      type: GET_USER_BY_ID,
-      payload: response.data,
-    });
-    console.log("data: ", data);
-    return data;
-  } catch (err: any) {
-    const errorMessage = err.response?.data?.message || "Something went wrong";
-
-    return { error: errorMessage };
+      return response.data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
   }
-};
+);
 
-export const updateProfile = (id: any, data: any) => async (dispatch: any) => {
-  try {
-    const response = await api.updateProfile(id, data);
-    const result = await dispatch({
-      type: UPDATE_PROFILE,
-      payload: response.data,
-    });
-    return result;
-  } catch (err: any) {
-    const errorMessage = err.response?.data?.message || "Something went wrong";
-
-    return { error: errorMessage };
+// Thunk action to update user profile
+export const updateProfile = createAsyncThunk(
+  UPDATE_PROFILE,
+  async ({ id, data }: { id: any; data: any }, { rejectWithValue }) => {
+    try {
+      const response = await api.updateProfile(id, data);
+      return response.data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
   }
-};
+);
 
-export const changePassword = (password: any) => async (dispatch: any) => {
-  try {
-    const response = await api.changePassword(password);
-    const result = await dispatch({
-      type: CHANGE_PASSWORD,
-      payload: response.data,
-    });
-    return result;
-  } catch (err: any) {
-    const errorMessage = err.response?.data?.message || "Something went wrong";
-
-    return { error: errorMessage };
+// Thunk action to change user password
+export const changePassword = createAsyncThunk(
+  CHANGE_PASSWORD,
+  async (password: any, { rejectWithValue }) => {
+    try {
+      const response = await api.changePassword(password);
+      return response.data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
   }
-};
+);
+
+// Slice for handling user state
+const userSlice = createSlice({
+  name: "user",
+  initialState: {
+    userData: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {
+    // Additional synchronous reducers can be added here
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.userData = action.payload;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.userData = { ...(state.userData || {}), ...action.payload };
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {})
+      .addMatcher(
+        (action) => action.type.endsWith("/rejected"),
+        (state, action: any) => {
+          state.error = action.payload;
+        }
+      );
+  },
+});
+
+// Export actions
+export const {} = userSlice.actions;
+
+// Export reducer
+export default userSlice.reducer;

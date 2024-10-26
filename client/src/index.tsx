@@ -6,15 +6,17 @@ import "./index.css";
 
 import App from "./App";
 import rootReducer from "./redux/reducer/mainReducer";
-//import rootReducer from "./redux/reducer/mainReducer";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
+// Configure the Redux store
 const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware: any) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(), // Custom middleware can be added here if needed
 });
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>

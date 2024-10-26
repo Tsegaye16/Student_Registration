@@ -1,24 +1,52 @@
+import { createSlice } from "@reduxjs/toolkit";
 import {
-  GET_ALL_COURSE,
-  ADD_COURSE,
-  DELETE_COURSE,
-} from "../../constant/actionType";
+  addCourse,
+  deleteCourse,
+  getAllCourse,
+  updateCourse,
+} from "../action/course";
 
-const courseState = {
-  courseData: null,
-};
+const courseSlice = createSlice({
+  name: "course",
+  initialState: {
+    courseData: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getAllCourse.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getAllCourse.fulfilled, (state, action) => {
+        state.loading = false;
+        state.courseData = action.payload;
+      })
+      .addCase(getAllCourse.rejected, (state: any, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addCourse.fulfilled, (state, action) => {
+        state.courseData = action.payload; // Handle added course
+      })
+      .addCase(deleteCourse.fulfilled, (state: any, action) => {
+        const deletedIds = action.meta.arg;
 
-const courseReducer = (state = courseState, action: any) => {
-  switch (action.type) {
-    case GET_ALL_COURSE:
-      return { ...state, courseData: action.payload };
-    case ADD_COURSE:
-      return { ...state, courseData: action.payload };
-    case DELETE_COURSE:
-      return { ...state, courseData: action.payload };
-    default:
-      return state;
-  }
-};
+        if (state.courseData && Array.isArray(state.courseData.result)) {
+          // Return a new array reference for reactivity
+          state.courseData = {
+            ...state.courseData,
+            result: state.courseData.result.filter(
+              (course: any) => !deletedIds.includes(course.id)
+            ),
+          };
+        }
+      })
+      .addCase(updateCourse.fulfilled, (state, action) => {
+        state.courseData = action.payload;
+      });
+  },
+});
 
-export default courseReducer;
+export default courseSlice.reducer;

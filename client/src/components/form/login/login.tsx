@@ -44,12 +44,13 @@ const Login: React.FC = () => {
   }, [dispatch, navigate, token]);
 
   const handleSubmit = async (values: any) => {
-    const response = await dispatch(signin(values, navigate) as any);
+    const response = await dispatch(signin(values) as any);
 
     if (response?.error) {
       message.error(`${response.error}`);
     } else if (response?.payload?.message) {
       message.success(`${response?.payload?.message}`);
+      navigate("/admin");
     }
   };
 

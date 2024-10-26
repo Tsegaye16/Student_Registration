@@ -1,48 +1,36 @@
-import {
-  GET_USER_BY_ID,
-  UPDATE_PROFILE,
-  CHANGE_PASSWORD,
-} from "../../constant/actionType";
+import { createSlice } from "@reduxjs/toolkit";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { changePassword, getUserById, updateProfile } from "../action/user";
 
-interface StatData {
-  totalSurveys: number;
-  totalResponses: number;
-}
+const userSlice = createSlice({
+  name: "user",
+  initialState: {
+    userData: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getUserById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userData = action.payload;
+      })
+      .addCase(getUserById.rejected, (state: any, action) => {
+        state.loading = false;
+        state.userData = action.payload;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.userData = action.payload;
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.userData = action.payload;
+      });
+  },
+});
 
-interface UserState {
-  user: User | null;
-  statData?: StatData;
-}
-
-interface Action<T = any> {
-  type: string;
-  payload?: T;
-}
-
-const initialState: UserState = {
-  user: null,
-};
-
-const userReducer = (
-  state: UserState = initialState,
-  action: Action
-): UserState => {
-  switch (action.type) {
-    case GET_USER_BY_ID:
-      return { ...state, user: action.payload as User };
-    case UPDATE_PROFILE:
-      return { ...state, user: action.payload as User };
-    case CHANGE_PASSWORD:
-      return { ...state, user: action.payload as User };
-    default:
-      return state;
-  }
-};
-
-export default userReducer;
+// Export reducer
+export default userSlice.reducer;

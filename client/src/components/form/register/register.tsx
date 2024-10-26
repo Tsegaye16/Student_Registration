@@ -27,12 +27,13 @@ const Registration = () => {
   const dispatch = useDispatch();
 
   const onFinish = async (values: any) => {
-    const response = await dispatch(signup(values, navigate) as any);
+    const response = await dispatch(signup(values) as any);
 
     if (response?.error) {
       message.error(`${response.error}`);
     } else if (response?.payload?.message) {
       message.success(`${response?.payload?.message}`);
+      navigate("/login");
     }
   };
 

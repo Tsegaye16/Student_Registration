@@ -25,9 +25,10 @@ import { LOGOUT } from "../../../constant/actionType";
 import { jwtDecode } from "jwt-decode";
 import { getUserById } from "../../../redux/action/user";
 import Profile from "./profile";
-import Student from "./student";
-import Course from "./course";
-import AddCourse from "./addCourse";
+import Student from "../student/student";
+import Course from "../course/course";
+import AddCourse from "../course/addCourse";
+import EditCourse from "../course/editCourse";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -37,11 +38,11 @@ const Dashboard = () => {
   const [selectedItem, setSelectedItem] = useState("Dashboard");
   //const [isServeysOpen, setIsServeysOpen] = useState(false);
   const [selectedAddCourse, setSelectedAddCourse] = useState(false);
-  //const [selectedDetail, setSelectedDetail] = useState(null);
-  //const [selectedAddCompany, setSelectedAddCompany] = useState(null);
-  //const [selectedAddQuestion, setSelectedAddQuestion] = useState(null);
-  //const [selectedEditQuestion, setSelectedEditQuestion] = useState(null);
-  //const [feedbackDetail, setFeedbackDetail] = useState(null);
+  const [selectEditCourse, setSelectEditCourse] = useState<any>({
+    name: "",
+    duration: "",
+    price: "",
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -58,8 +59,7 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  const user = useSelector((state: any) => state.user?.user?.newUser);
-  console.log("User: ", user);
+  const user = useSelector((state: any) => state.user?.userData?.newUser);
 
   useEffect(() => {
     if (!token) {
@@ -87,14 +87,37 @@ const Dashboard = () => {
   const handleMenuItemClick = (item: any) => {
     setSelectedItem(item);
     setSelectedAddCourse(false);
+    setSelectEditCourse({
+      name: "",
+      price: "",
+      duration: "",
+    });
   };
   const handleAddCourse = () => {
     setSelectedAddCourse(true);
   };
 
+  const handleEditCourse = (id: {
+    id: string;
+    name: string;
+    duration: string;
+    price: string;
+  }) => {
+    setSelectEditCourse(id);
+  };
+
   const handleCancel = () => {
     setSelectedAddCourse(false);
+    setSelectEditCourse({
+      name: "",
+      duration: "",
+      price: "",
+    });
   };
+
+  const isSelectEditCourseEmpty = Object.values(selectEditCourse).every(
+    (value) => value === ""
+  );
 
   const menu = (
     <Menu onClick={({ key }) => handleMenuItemClick(key)}>
@@ -194,12 +217,17 @@ const Dashboard = () => {
         <Content style={{ margin: "16px" }}>
           {selectedAddCourse ? (
             <AddCourse onSave={handleCancel} />
+          ) : !isSelectEditCourseEmpty ? (
+            <EditCourse courseInfo={selectEditCourse} onSave={handleCancel} />
           ) : (
             <>
               {selectedItem === "Dashboard" && <div>Dashboard</div>}
               {selectedItem === "Student" && <Student />}
               {selectedItem === "Course" && (
-                <Course onAddCourse={handleAddCourse} />
+                <Course
+                  onAddCourse={handleAddCourse}
+                  onEditCourse={handleEditCourse}
+                />
               )}
 
               {selectedItem === "profile" && (

@@ -1,62 +1,83 @@
-import React, { useState } from "react";
 import { Input, Button, Select, Form, Typography, message } from "antd";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { addCourse } from "../../../redux/action/course";
+import { updateCourse } from "../../../redux/action/course";
 
 const { Option } = Select;
 const { Title } = Typography;
 
-interface propType {
+interface Props {
+  courseInfo: { id: string; name: string; duration: string; price: string };
   onSave: any;
 }
-const AddCourse: React.FC<propType> = ({ onSave }) => {
+
+const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
   const [courseData, setCourseData] = useState({
     name: "",
-    price: "",
     duration: "",
+    price: "",
   });
   const [durationType, setDurationType] = useState("hour");
+  const [isDataChanged, setIsDataChanged] = useState(false);
 
   const dispatch = useDispatch();
 
-  const handleInputChange = (e: any) => {
+  useEffect(() => {
+    const { name, price } = courseInfo;
+
+    // Extract duration number and type from the courseInfo.duration string (e.g., "4 month")
+    const [durationValue, durationUnit] = courseInfo.duration.split(" ");
+
+    setCourseData({
+      name: name || "",
+      duration: durationValue || "",
+      price: price || "",
+    });
+
+    // Set duration type to match the extracted unit
+    setDurationType(durationUnit || "hour");
+  }, [courseInfo]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCourseData({ ...courseData, [name]: value });
+    setCourseData((prevData) => ({ ...prevData, [name]: value }));
+    setIsDataChanged(true);
   };
 
-  const handleDurationTypeChange = (value: any) => {
+  const handleDurationTypeChange = (value: string) => {
     setDurationType(value);
+    setIsDataChanged(true);
   };
 
   const handleSave = async () => {
-    const fullDuration = `${courseData.duration} ${durationType}`;
-    const finalData = { ...courseData, duration: fullDuration };
+    const updatedData = {
+      ...courseData,
+      duration: `${courseData.duration} ${durationType}`,
+    };
 
-    const response = await dispatch(addCourse(finalData) as any);
-    console.log("Course data saved:", response);
+    const response = await dispatch(
+      updateCourse({ id: courseInfo.id, data: updatedData }) as any
+    );
+
     if (response?.payload?.message) {
       message.success(`${response?.payload?.message}`);
       onSave();
     } else if (response?.error) {
-      message.error(`${response.error}`);
+      message.error(`${response.payload.split(":")[1]?.trim()}`);
     }
   };
 
   const handleCancel = () => {
-    setCourseData({
-      name: "",
-      price: "",
-      duration: "",
-    });
-    setDurationType("hour");
+    // setCourseData({ name: "", duration: "", price: "" });
+    //setDurationType("hour");
     onSave();
   };
 
   return (
     <div style={styles.container}>
-      <Title level={3} style={styles.title}>
-        Add New Course
+      <Title level={4} style={styles.title}>
+        Editing Course
       </Title>
       <Form layout="vertical" style={styles.form}>
         <Form.Item label="Course Name" style={styles.formItem}>
@@ -103,7 +124,13 @@ const AddCourse: React.FC<propType> = ({ onSave }) => {
         </Form.Item>
 
         <Form.Item style={styles.formItem}>
-          <Button type="primary" onClick={handleSave} style={styles.saveButton}>
+          <Button
+            type="primary"
+            onClick={handleSave}
+            disabled={!isDataChanged}
+            //style={{ marginRight: 8 }}
+            style={styles.saveButton}
+          >
             Save
           </Button>
           <Button onClick={handleCancel} style={styles.cancelButton}>
@@ -157,8 +184,8 @@ const styles: any = {
     width: "30%",
   },
   saveButton: {
-    backgroundColor: "#52c41a",
-    borderColor: "#52c41a",
+    backgroundColor: "primary",
+    //borderColor: "#52c41a",
     marginRight: "8px",
     width: "100px",
   },
@@ -167,4 +194,4 @@ const styles: any = {
   },
 };
 
-export default AddCourse;
+export default EditCourse;
