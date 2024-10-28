@@ -14,6 +14,7 @@ const Course = sequelize.define("Course", {
     validate: {
       notEmpty: { msg: "Please insert course name" },
     },
+    unique: true,
   },
   duration: {
     type: DataTypes.STRING,

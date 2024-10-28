@@ -126,3 +126,11 @@ export const deleteStudent = async (id: string[]) => {
     throw error;
   }
 };
+
+export const updateStudent = async (id: string, data: any) => {
+  try {
+    return await API.put(`/updateStudent/${id}`, data);
+  } catch (error) {
+    throw error;
+  }
+};

@@ -13,9 +13,10 @@ const { Title } = Typography;
 
 interface props {
   onAddStudent: any;
+  onDetailStudent: any;
 }
 
-const ActiveStudent: React.FC<props> = ({ onAddStudent }) => {
+const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
   const dispatch = useDispatch();
   const students = useSelector(
     (state: any) => state.student?.studentData?.result
@@ -45,17 +46,6 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent }) => {
       key: "action",
       render: (text: any, record: any) => (
         <Space size="middle">
-          <Button
-            icon={<EditOutlined />}
-            type="link"
-
-            // onClick={(event) => {
-            //   event.stopPropagation();
-            //   onEditCourse(record);
-            // }}
-          >
-            Edit
-          </Button>
           <Popconfirm
             title="Are you sure you want to delete this student?"
             onConfirm={() => confirmDelete([record.id])} // Send single ID in an array
@@ -65,7 +55,14 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent }) => {
             <Button type="link" icon={<DeleteOutlined />} danger>
               Delete
             </Button>
-            <Button type="link" icon={<InfoCircleOutlined />}>
+            <Button
+              type="link"
+              icon={<InfoCircleOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDetailStudent(record);
+              }}
+            >
               Detail
             </Button>
           </Popconfirm>

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { addStudent, deleteStudent, getAllStudent } from "../action/student";
+import { updateCourse } from "../action/course";
 
 interface StudentState {
   studentData: any[]; // Define as an array type to avoid null issues
@@ -58,6 +59,20 @@ const studentSlice = createSlice({
             result: state.studentData.result.filter(
               (student: any) => !deletedIds.includes(student.id)
             ),
+          };
+        }
+      })
+      .addCase(updateCourse.fulfilled, (state: any, action: any) => {
+        const updatedStudent = action.payload;
+        if (state.studentData && Array.isArray(state.studentData.result)) {
+          state.studentData = {
+            ...state.studentData,
+            result: state.studentData.result.map((student: any) => {
+              if (student.id === updatedStudent.id) {
+                return updatedStudent;
+              }
+              return student;
+            }),
           };
         }
       });

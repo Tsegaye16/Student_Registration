@@ -1,29 +1,46 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Input, Button, Select, Form, Typography, message } from "antd";
 import { addStudent } from "../../../redux/action/student";
+import { getAllCourse } from "../../../redux/action/course";
+
 const { Option } = Select;
 const { Title } = Typography;
 
 interface propType {
   onSave: any;
 }
+
 const AddStudent: React.FC<propType> = ({ onSave }) => {
   const [studentData, setStudentData] = useState({
     name: "",
     phoneNumber: "",
+    course: "",
+    shift: "", // New field for shift
   });
 
+  const courses = useSelector((state: any) => state.course?.courseData?.result);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllCourse() as any);
+  }, [dispatch]);
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setStudentData({ ...studentData, [name]: value });
   };
 
+  const handleCourseChange = (value: string) => {
+    setStudentData({ ...studentData, course: value });
+  };
+
+  const handleShiftChange = (value: string) => {
+    setStudentData({ ...studentData, shift: value });
+  };
+
   const handleSave = async () => {
     const response = await dispatch(addStudent(studentData) as any);
-    console.log("response error: ", response);
     if (response?.payload?.message) {
       message.success(`${response?.payload?.message}`);
       onSave();
@@ -36,17 +53,19 @@ const AddStudent: React.FC<propType> = ({ onSave }) => {
     setStudentData({
       name: "",
       phoneNumber: "",
+      course: "",
+      shift: "", // Reset shift field
     });
-
     onSave();
   };
+
   return (
     <div style={styles.container}>
       <Title level={3} style={styles.title}>
-        Registering student
+        Registering Student
       </Title>
       <Form layout="vertical" style={styles.form}>
-        <Form.Item label="Course Name" style={styles.formItem}>
+        <Form.Item label="Student Name" style={styles.formItem}>
           <Input
             name="name"
             value={studentData.name}
@@ -56,16 +75,45 @@ const AddStudent: React.FC<propType> = ({ onSave }) => {
           />
         </Form.Item>
 
-        <Form.Item label="Phone number" style={styles.formItem}>
+        <Form.Item label="Phone Number" style={styles.formItem}>
           <Input
             name="phoneNumber"
             value={studentData.phoneNumber}
             onChange={handleInputChange}
             placeholder="Enter student phone number"
-            // type="number"
             style={styles.input}
           />
         </Form.Item>
+
+        {/* Course and Shift Selection */}
+        <div style={styles.horizontalContainer}>
+          <Form.Item label="Select Course" style={styles.formItem}>
+            <Select
+              placeholder="Select a course"
+              onChange={handleCourseChange}
+              value={studentData.course}
+              style={styles.select}
+            >
+              {courses?.map((course: any) => (
+                <Option key={course.id} value={course.name}>
+                  {course.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item label="Shift" style={styles.formItem}>
+            <Select
+              placeholder="Select shift"
+              onChange={handleShiftChange}
+              value={studentData.shift}
+              style={styles.select}
+            >
+              <Option value="evening">Evening</Option>
+              <Option value="afternoon">Afternoon</Option>
+            </Select>
+          </Form.Item>
+        </div>
 
         <Form.Item style={styles.formItem}>
           <Button type="primary" onClick={handleSave} style={styles.saveButton}>
@@ -82,7 +130,7 @@ const AddStudent: React.FC<propType> = ({ onSave }) => {
 
 const styles: any = {
   container: {
-    maxWidth: "500px",
+    maxWidth: "600px",
     margin: "auto",
     padding: "20px",
     borderRadius: "8px",
@@ -99,7 +147,8 @@ const styles: any = {
     gap: "16px",
   },
   formItem: {
-    marginBottom: "16px",
+    marginBottom: "8px",
+    flex: 1,
   },
   input: {
     width: "100%",
@@ -107,23 +156,16 @@ const styles: any = {
     borderRadius: "4px",
     border: "1px solid #d9d9d9",
   },
-  durationContainer: {
+  horizontalContainer: {
     display: "flex",
-    gap: "8px",
-    alignItems: "center",
-  },
-  durationInput: {
-    width: "70%",
-    padding: "10px",
-    borderRadius: "4px",
-    border: "1px solid #d9d9d9",
+    justifyContent: "space-between", // Add space between items
+    gap: "16px",
   },
   select: {
-    width: "30%",
+    width: "100%",
   },
   saveButton: {
-    backgroundColor: "primary",
-    // borderColor: "#52c41a",
+    backgroundColor: "#1890ff",
     marginRight: "8px",
     width: "100px",
   },

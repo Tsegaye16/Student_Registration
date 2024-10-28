@@ -3,6 +3,7 @@ import {
   GET_ALL_STUDENT,
   ADD_STUDENT,
   DELETE_STUDENT,
+  UPDATE_STUDENT_BY_ID,
 } from "../../constant/actionType";
 import * as api from "../api/api";
 
@@ -39,6 +40,20 @@ export const deleteStudent = createAsyncThunk(
   async (id: string[], { rejectWithValue }) => {
     try {
       const response = await api.deleteStudent(id);
+      return response.data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const updateStudent = createAsyncThunk(
+  UPDATE_STUDENT_BY_ID,
+  async ({ id, data }: { id: string; data: any }, { rejectWithValue }) => {
+    try {
+      const response = await api.updateStudent(id, data);
       return response.data;
     } catch (error: any) {
       const errorMessage =

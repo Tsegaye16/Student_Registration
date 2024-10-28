@@ -28,7 +28,7 @@ import { LOGOUT } from "../../../constant/actionType";
 import { jwtDecode } from "jwt-decode";
 import { getUserById } from "../../../redux/action/user";
 import Profile from "./profile";
-import Student from "../student/student";
+//import Student from "../student/student";
 import Course from "../course/course";
 import AddCourse from "../course/addCourse";
 import EditCourse from "../course/editCourse";
@@ -36,6 +36,7 @@ import AddStudent from "../student/addStudent";
 import ActiveStudent from "../student/activeStudent";
 import GraduatedStudent from "../student/graduatedStudent";
 import Attendance from "../Attendance/attendance";
+import StudentDetail from "../student/studentDetail";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -51,6 +52,7 @@ const Dashboard = () => {
     price: "",
   });
   const [selectAddStudent, setSelectAddStudent] = useState(false);
+  const [selectDetail, setSelectDetail] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -104,6 +106,7 @@ const Dashboard = () => {
       duration: "",
     });
     setSelectAddStudent(false);
+    setSelectDetail(null);
   };
   const handleAddCourse = () => {
     setSelectedAddCourse(true);
@@ -122,6 +125,10 @@ const Dashboard = () => {
     setSelectAddStudent(true);
   };
 
+  const handleDetailClick = (record: any) => {
+    setSelectDetail(record);
+  };
+
   const handleCancel = () => {
     setSelectedAddCourse(false);
     setSelectAddStudent(false);
@@ -131,7 +138,9 @@ const Dashboard = () => {
       price: "",
     });
   };
-
+  const onBack = () => {
+    setSelectDetail(null);
+  };
   const isSelectEditCourseEmpty = Object.values(selectEditCourse).every(
     (value) => value === ""
   );
@@ -254,12 +263,12 @@ const Dashboard = () => {
             <EditCourse courseInfo={selectEditCourse} onSave={handleCancel} />
           ) : selectAddStudent ? (
             <AddStudent onSave={handleCancel} />
+          ) : selectDetail ? (
+            <StudentDetail studentInfo={selectDetail} onback={onBack} />
           ) : (
             <>
               {selectedItem === "Dashboard" && <div>Dashboard</div>}
-              {selectedItem === "Student" && (
-                <Student onAddStudent={handleAddStudent} />
-              )}
+
               {selectedItem === "Course" && (
                 <Course
                   onAddCourse={handleAddCourse}
@@ -271,7 +280,10 @@ const Dashboard = () => {
                 <Profile user={user} onUpdate={onUpdate} />
               )}
               {selectedItem === "Active" && (
-                <ActiveStudent onAddStudent={handleAddStudent} />
+                <ActiveStudent
+                  onAddStudent={handleAddStudent}
+                  onDetailStudent={handleDetailClick}
+                />
               )}
               {selectedItem === "Graduated" && <GraduatedStudent />}
               {selectedItem === "Attendance" && <Attendance />}
