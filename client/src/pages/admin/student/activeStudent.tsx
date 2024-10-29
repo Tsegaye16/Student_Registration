@@ -24,14 +24,17 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
 
   const confirmDelete = async (studentIds: string[]) => {
     const response = await dispatch(deleteStudent(studentIds) as any);
-    if (response?.error) {
-      message.error(`${response.error}`);
-    } else if (response?.payload?.message) {
-      message.success(`${studentIds.length} course(s) deleted successfully`);
-      setSelectedRowKeys([]); // Clear selection after deletion
-    }
 
-    //dispatch(getAllCourse() as any);
+    if (response?.payload?.message) {
+      message.success(`${studentIds.length} student(s) deleted successfully`);
+      setSelectedRowKeys([]); // Clear selection after deletion
+    } else if (response?.error) {
+      if (response.payload.includes(":")) {
+        message.error(`${response.payload.split(":")[1]?.trim()}`);
+      } else {
+        message.error(response.payload); // or handle it another way if `:` is not present
+      }
+    }
   };
 
   useEffect(() => {

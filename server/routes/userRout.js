@@ -18,6 +18,7 @@ import {
   addStudent,
   deleteStudent,
   updateStudent,
+  markAttendance,
 } from "../controllers/studentController.js";
 import upload from "../config/multerConfig.js";
 
@@ -42,5 +43,6 @@ router.route("/addStudent").post(addStudent);
 router.route("/getAllStudent").get(getAllStudent);
 router.route("/deleteStudent").delete(deleteStudent);
 router.route("/updateStudent/:id").put(updateStudent);
+router.route("/markAttendance").put(markAttendance);
 
 export default router;

@@ -64,7 +64,11 @@ const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
       message.success(`${response?.payload?.message}`);
       onSave();
     } else if (response?.error) {
-      message.error(`${response.payload.split(":")[1]?.trim()}`);
+      if (response.payload.includes(":")) {
+        message.error(`${response.payload.split(":")[1]?.trim()}`);
+      } else {
+        message.error(response.payload); // or handle it another way if `:` is not present
+      }
     }
   };
 

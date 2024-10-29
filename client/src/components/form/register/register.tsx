@@ -29,11 +29,15 @@ const Registration = () => {
   const onFinish = async (values: any) => {
     const response = await dispatch(signup(values) as any);
 
-    if (response?.error) {
-      message.error(`${response.error}`);
-    } else if (response?.payload?.message) {
+    if (response?.payload?.message) {
       message.success(`${response?.payload?.message}`);
       navigate("/login");
+    } else if (response?.error) {
+      if (response.payload.includes(":")) {
+        message.error(`${response.payload.split(":")[1]?.trim()}`);
+      } else {
+        message.error(response.payload); // or handle it another way if `:` is not present
+      }
     }
   };
 

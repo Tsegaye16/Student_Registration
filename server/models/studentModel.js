@@ -40,6 +40,11 @@ const Student = sequelize.define("Student", {
       notEmpty: { msge: "Shift is required" },
     },
   },
+  attendance: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    defaultValue: [], // Initialize as an empty array
+  },
 });
 
 export default Student;

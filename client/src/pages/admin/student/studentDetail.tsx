@@ -243,32 +243,6 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
         </Form.Item>
       </div>
     </Form>,
-    <Form layout="vertical">
-      <Divider>
-        {" "}
-        {/* Certificate Information Form */}
-        <Title level={4} style={styles.title}>
-          Certificate
-        </Title>
-      </Divider>
-      <div style={styles.twoColumn}>
-        <Form.Item label="Certificate Number" style={styles.formItem}>
-          <Input
-            style={{ width: "70%" }}
-            name="certificateNumber"
-            placeholder="Enter certificate number"
-            onChange={handleinputChange}
-          />
-        </Form.Item>
-        <Form.Item label="Issue Date" style={styles.formItem}>
-          <DatePicker
-            style={{ width: "70%" }}
-            placeholder="Select issue date"
-            // onChange={handleDateChange}
-          />
-        </Form.Item>
-      </div>
-    </Form>,
   ];
 
   const handleNext = () => {

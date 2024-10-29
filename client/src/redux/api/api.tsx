@@ -134,3 +134,11 @@ export const updateStudent = async (id: string, data: any) => {
     throw error;
   }
 };
+
+export const markAttendance = async (data: any) => {
+  try {
+    return await API.put("/markAttendance", data);
+  } catch (error) {
+    throw error;
+  }
+};

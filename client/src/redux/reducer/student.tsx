@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addStudent, deleteStudent, getAllStudent } from "../action/student";
-import { updateCourse } from "../action/course";
+import {
+  addStudent,
+  deleteStudent,
+  getAllStudent,
+  markAttendance,
+} from "../action/student";
+import { updateStudent } from "../action/student";
 
 interface StudentState {
   studentData: any[]; // Define as an array type to avoid null issues
@@ -40,11 +45,7 @@ const studentSlice = createSlice({
         state.error = null;
       })
       .addCase(addStudent.fulfilled, (state, action: PayloadAction<any>) => {
-        if (Array.isArray(state.studentData)) {
-          state.studentData.push(action.payload); // Ensures it's an array before pushing
-        } else {
-          state.studentData = [action.payload]; // Reset as an array if something changed its type
-        }
+        state.studentData.push(action.payload); // Directly pushing the new student
         state.loading = false;
       })
       .addCase(addStudent.rejected, (state, action) => {
@@ -53,29 +54,54 @@ const studentSlice = createSlice({
       })
       .addCase(deleteStudent.fulfilled, (state: any, action: any) => {
         const deletedIds = action.meta.arg;
-        if (state.studentData && Array.isArray(state.studentData.result)) {
-          state.studentData = {
-            ...state.studentData,
-            result: state.studentData.result.filter(
-              (student: any) => !deletedIds.includes(student.id)
-            ),
-          };
-        }
+        state.studentData = state.studentData.filter(
+          (student: any) => !deletedIds.includes(student.id)
+        );
       })
-      .addCase(updateCourse.fulfilled, (state: any, action: any) => {
+      .addCase(updateStudent.fulfilled, (state: any, action: any) => {
         const updatedStudent = action.payload;
-        if (state.studentData && Array.isArray(state.studentData.result)) {
-          state.studentData = {
-            ...state.studentData,
-            result: state.studentData.result.map((student: any) => {
-              if (student.id === updatedStudent.id) {
-                return updatedStudent;
+        state.studentData = state.studentData.map((student: any) => {
+          if (student.id === updatedStudent.id) {
+            return updatedStudent;
+          }
+          return student;
+        });
+      })
+      .addCase(
+        markAttendance.fulfilled,
+        (state, action: PayloadAction<any[]>) => {
+          const attendanceData = Array.isArray(action.payload)
+            ? action.payload
+            : []; // Ensure attendanceData is an array
+
+          attendanceData.forEach((record) => {
+            const studentIndex = state.studentData.findIndex(
+              (student) => student.id === record.studentId
+            );
+
+            if (studentIndex !== -1) {
+              const student = state.studentData[studentIndex];
+
+              if (!student.attendance) {
+                student.attendance = []; // Initialize attendance if not present
               }
-              return student;
-            }),
-          };
+
+              const existingAttendance = student.attendance.find(
+                (att: any) => att.date === record.date
+              );
+
+              if (existingAttendance) {
+                existingAttendance.status = record.status; // Update status if it exists
+              } else {
+                student.attendance.push({
+                  date: record.date,
+                  status: record.status,
+                });
+              }
+            }
+          });
         }
-      });
+      );
   },
 });
 

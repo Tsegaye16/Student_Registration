@@ -4,6 +4,7 @@ import {
   ADD_STUDENT,
   DELETE_STUDENT,
   UPDATE_STUDENT_BY_ID,
+  MARK_ATTENDANCE,
 } from "../../constant/actionType";
 import * as api from "../api/api";
 
@@ -12,6 +13,7 @@ export const getAllStudent = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.getAllStudent();
+      console.log("datas: ", response);
       return response.data;
     } catch (error: any) {
       const errorMessage =
@@ -54,6 +56,21 @@ export const updateStudent = createAsyncThunk(
   async ({ id, data }: { id: string; data: any }, { rejectWithValue }) => {
     try {
       const response = await api.updateStudent(id, data);
+
+      return response.data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const markAttendance = createAsyncThunk(
+  MARK_ATTENDANCE,
+  async (data: any, { rejectWithValue }) => {
+    try {
+      const response = await api.markAttendance(data);
       return response.data;
     } catch (error: any) {
       const errorMessage =

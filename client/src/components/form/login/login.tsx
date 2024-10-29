@@ -46,11 +46,15 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: any) => {
     const response = await dispatch(signin(values) as any);
 
-    if (response?.error) {
-      message.error(`${response.error}`);
-    } else if (response?.payload?.message) {
+    if (response?.payload?.message) {
       message.success(`${response?.payload?.message}`);
       navigate("/admin");
+    } else if (response?.error) {
+      if (response.payload.includes(":")) {
+        message.error(`${response.payload.split(":")[1]?.trim()}`);
+      } else {
+        message.error(response.payload); // or handle it another way if `:` is not present
+      }
     }
   };
 
