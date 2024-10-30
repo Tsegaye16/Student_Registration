@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { TableRowSelection } from "antd/es/table/interface";
+import { useTranslation } from "react-i18next";
 
 const { Title } = Typography;
 
@@ -21,9 +22,10 @@ interface propType {
 const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const courses = useSelector((state: any) => state.course?.courseData?.result);
-
+  //console.log("courses: ", courses);
   // General delete handler for both single and multiple deletions
   const confirmDelete = async (courseIds: string[]) => {
     const response = await dispatch(deleteCourse(courseIds) as any);
@@ -44,24 +46,27 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
   // Columns definition for the course table
   const columns = [
     {
-      title: "Name",
+      title: t("Name"),
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Price",
+      title: t("Price"),
       dataIndex: "price",
       key: "price",
-      render: (price: number) => `${price} Birr`, // Format price
+      render: (price: number) => `${price} ${t("Birr")}`, // Format price
     },
     {
-      title: "Duration",
+      title: t("Duration"),
       dataIndex: "duration",
       key: "duration",
-      render: (duration: string) => `${duration}`, // Format duration
+      render: (duration: string) => {
+        const [number, unit] = duration.split(" ");
+        return `${number} ${t(unit)}`;
+      }, // Format duration
     },
     {
-      title: "Action",
+      title: t("Action"),
       key: "action",
       render: (text: any, record: any) => (
         <Space size="middle">
@@ -74,16 +79,16 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
               onEditCourse(record);
             }}
           >
-            Edit
+            {t("Edit")}
           </Button>
           <Popconfirm
-            title="Are you sure you want to delete this course?"
+            title={t("Are you sure you want to delete this course?")}
             onConfirm={() => confirmDelete([record.id])} // Send single ID in an array
-            okText="Yes"
-            cancelText="No"
+            okText={t("Yes")}
+            cancelText={t("No")}
           >
             <Button type="link" icon={<DeleteOutlined />} danger>
-              Delete
+              {t("Delete")}
             </Button>
           </Popconfirm>
         </Space>
@@ -112,7 +117,7 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
           marginBottom: "16px",
         }}
       >
-        <Title level={5}>Courses</Title>
+        <Title level={5}>{t("Course")}</Title>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -121,7 +126,7 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
             onAddCourse(true);
           }}
         >
-          Add New Course
+          {t("Add New Course")}
         </Button>
       </div>
       <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
@@ -131,12 +136,12 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
 
         {selectedRowKeys.length > 0 && (
           <Popconfirm
-            title="Are you sure you want to delete selected courses?"
+            title={t("Are you sure you want to delete selected courses?")}
             onConfirm={() => confirmDelete(selectedRowKeys as string[])}
-            okText="Yes"
-            cancelText="No"
+            okText={t("Yes")}
+            cancelText={t("No")}
           >
-            <Button danger>Delete Selected</Button>
+            <Button danger>{t("Delete Selected")}</Button>
           </Popconfirm>
         )}
       </div>

@@ -19,6 +19,7 @@ import "./style.css";
 import { getAllCourse } from "../../../redux/action/course";
 import { updateStudent } from "../../../redux/action/student";
 import { styles } from "./style";
+import { useTranslation } from "react-i18next";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -43,6 +44,7 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
   // Update progress percentage when start date or selected course changes
   const courses = useSelector((state: any) => state.course?.courseData?.result);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch(getAllCourse() as any);
@@ -123,8 +125,14 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
   };
 
   const handleDateChange = (date: moment.Moment | null) => {
-    setStudent({ ...student, startDate: date ? moment(date) : null });
+    setStudent({ ...student, startDate: date });
     setIsDataChanged(true);
+  };
+
+  const handleOk = (date: moment.Moment | null) => {
+    if (date) {
+      setStudent({ ...student, startDate: date });
+    }
   };
 
   const handleSave = async () => {
@@ -156,26 +164,26 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
     >
       <Divider>
         <Title level={4} style={styles.title}>
-          Student Profile
+          {t("Student Profile")}
         </Title>
       </Divider>
 
       <div style={styles.twoColumn}>
-        <Form.Item label="Name" style={styles.formItem}>
+        <Form.Item label={t("Name")} style={styles.formItem}>
           <Input
             style={{ width: "70%" }}
             name="name"
-            placeholder="Student Name"
+            placeholder={t("Student Name")}
             value={student.name}
             onChange={handleinputChange}
           />
         </Form.Item>
-        <Form.Item label="Assign Course" style={styles.formItem}>
+        <Form.Item label={t("Assign Course")} style={styles.formItem}>
           <Select
             style={{ width: "70%" }}
             value={student?.course}
             onChange={handleCourseAssign}
-            placeholder="Select a course"
+            placeholder="Select course"
           >
             {courses?.map((course: any) => (
               <Option key={course.id} value={course.name}>
@@ -184,31 +192,32 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Assign Shift" style={styles.formItem}>
+        <Form.Item label={t("Assign Shift")} style={styles.formItem}>
           <Select
             placeholder="Select shift"
             onChange={handleShift}
             value={student.shift}
             style={{ width: "70%" }}
           >
-            <Option value="evening">Evening</Option>
-            <Option value="afternoon">Afternoon</Option>
+            <Option value="afternoon">{t("Morning")}</Option>
+            <Option value="evening">{t("Evining")}</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Phone" style={styles.formItem}>
+        <Form.Item label={t("Phone Number")} style={styles.formItem}>
           <Input
             style={{ width: "70%" }}
             name="phoneNumber"
-            placeholder="Student Phone"
+            placeholder={t("Student Phone number")}
             value={student.phoneNumber}
             onChange={handleinputChange}
           />
         </Form.Item>
-        <Form.Item label="Class Start Date" style={styles.formItem}>
+        <Form.Item label={t("Class Start Date")} style={styles.formItem}>
           <DatePicker
             style={{ width: "70%" }}
             onChange={handleDateChange}
-            placeholder="Select class start date"
+            onOk={handleOk}
+            placeholder={t("Select class start date")}
             disabledDate={(current) =>
               current && current < moment().startOf("day")
             }
@@ -220,24 +229,27 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
     <Form layout="vertical">
       <Divider>
         <Title level={4} style={styles.title}>
-          Payment Information
+          {t("Payment Information")}
         </Title>
       </Divider>
       <div style={styles.twoColumn}>
         {/* Payment Information Form */}
 
-        <Form.Item label="Payment Status" style={styles.formItem}>
-          <Select style={{ width: "70%" }} placeholder="Select payment status">
-            <Option value="Paid">Paid</Option>
-            <Option value="Unpaid">Unpaid</Option>
-            <Option value="Partially">Partially</Option>
+        <Form.Item label={t("Payment Status")} style={styles.formItem}>
+          <Select
+            style={{ width: "70%" }}
+            placeholder={t("Select payment status")}
+          >
+            <Option value="Paid">{t("Paid")}</Option>
+            <Option value="Unpaid">{t("Unpaid")}</Option>
+            <Option value="Partially">{t("Partially")}</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Amount Paid" style={styles.formItem}>
+        <Form.Item label={t("Amount Paid")} style={styles.formItem}>
           <Input
             style={{ width: "70%" }}
             name="amountPaid"
-            placeholder="Enter amount"
+            placeholder={t("Enter amount")}
             onChange={handleinputChange}
           />
         </Form.Item>
@@ -274,7 +286,11 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
           </Button>
         </Tooltip>
       </div>
-      <Card title="Student Details" bordered={false} style={{ width: "100%" }}>
+      <Card
+        title={t("Student Details")}
+        bordered={false}
+        style={{ width: "100%" }}
+      >
         <TransitionGroup component={null}>
           <CSSTransition
             key={currentStep}
@@ -293,7 +309,7 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
             disabled={!isDataChanged}
             onClick={handleSave}
           >
-            Save Changes
+            {t("Save Changes")}
           </Button>
         </Form.Item>
         <Divider />
@@ -305,18 +321,18 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
           }}
         >
           <Button onClick={handlePrev} disabled={currentStep === 0}>
-            Previous
+            {t("Previous")}
           </Button>
           <Button
             onClick={handleNext}
             disabled={currentStep === forms.length - 1}
           >
-            Next
+            {t("Next")}
           </Button>
         </div>
         <Divider />
         <Card
-          title="Student Progress"
+          title={t("Student Progress")}
           // type="inner"
           style={{ marginBottom: "20px" }}
         >

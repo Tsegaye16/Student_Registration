@@ -12,6 +12,7 @@ import { LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signup } from "../../../redux/action/auth";
+import { useTranslation } from "react-i18next";
 
 const { Title, Link } = Typography;
 
@@ -25,6 +26,8 @@ const Registration = () => {
   const [formData, setFormData] = useState(initialState);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const { t, i18n } = useTranslation();
 
   const onFinish = async (values: any) => {
     const response = await dispatch(signup(values) as any);
@@ -65,7 +68,7 @@ const Registration = () => {
             style={{ backgroundColor: "#1890ff", marginBottom: "10px" }}
             icon={<LockOutlined />}
           />
-          <Title level={3}> Sign Up</Title>
+          <Title level={3}> {t("Sign Up")}</Title>
         </div>
         <Form
           name="registration"
@@ -75,47 +78,50 @@ const Registration = () => {
           autoComplete="off"
         >
           <Form.Item
-            label="Full Name"
+            label={t("Full Name")}
             name="name"
-            rules={[{ required: true, message: "Please enter your full name" }]}
-          >
-            <Input placeholder="Full Name" />
-          </Form.Item>
-
-          <Form.Item
-            label="Email"
-            name="email"
             rules={[
-              { required: true, message: "Please enter your email" },
-              { type: "email", message: "Please enter a valid email" },
+              { required: true, message: t("Please enter your full name") },
             ]}
           >
-            <Input placeholder="Email" />
+            <Input placeholder={t("Full Name")} />
           </Form.Item>
 
           <Form.Item
-            label="Password"
+            label={t("Email")}
+            name="email"
+            rules={[
+              { required: true, message: t("Please enter your email!") },
+              { type: "email", message: t("Please enter a valid email") },
+            ]}
+          >
+            <Input placeholder={t("Email")} />
+          </Form.Item>
+
+          <Form.Item
+            label={t("Password")}
             name="password"
             rules={[
-              { required: true, message: "Please enter your password" },
+              { required: true, message: t("Please enter your password!") },
               {
                 min: 6,
                 message: "Password must be at least 6 characters long",
               },
             ]}
           >
-            <Input.Password placeholder="Password" />
+            <Input.Password placeholder={t("Password")} />
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" block>
-              Sign Up
+              {t("Sign Up")}
             </Button>
           </Form.Item>
 
           <Form.Item>
             <Typography.Text>
-              Already have an account? <Link href="/login">Sign in</Link>
+              {t("Already have an account?")}{" "}
+              <Link href="/login">{t("Sign In")}</Link>
             </Typography.Text>
           </Form.Item>
         </Form>

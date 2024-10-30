@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { updateCourse } from "../../../redux/action/course";
+import { useTranslation } from "react-i18next";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -21,6 +22,8 @@ const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
   const [durationType, setDurationType] = useState("hour");
   const [isDataChanged, setIsDataChanged] = useState(false);
 
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -36,7 +39,7 @@ const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
     });
 
     // Set duration type to match the extracted unit
-    setDurationType(durationUnit || "hour");
+    setDurationType(`${t(durationUnit)}` || t("hour"));
   }, [courseInfo]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,37 +84,37 @@ const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
   return (
     <div style={styles.container}>
       <Title level={4} style={styles.title}>
-        Editing Course
+        {t("Editing Course")}
       </Title>
       <Form layout="vertical" style={styles.form}>
-        <Form.Item label="Course Name" style={styles.formItem}>
+        <Form.Item label={t("Course Name")} style={styles.formItem}>
           <Input
             name="name"
             value={courseData.name}
             onChange={handleInputChange}
-            placeholder="Enter course name"
+            placeholder={t("Enter course name")}
             style={styles.input}
           />
         </Form.Item>
 
-        <Form.Item label="Price" style={styles.formItem}>
+        <Form.Item label={t("Price")} style={styles.formItem}>
           <Input
             name="price"
             value={courseData.price}
             onChange={handleInputChange}
-            placeholder="Enter course price"
+            placeholder={t("Enter course price")}
             type="number"
             style={styles.input}
           />
         </Form.Item>
 
-        <Form.Item label="Duration" style={styles.formItem}>
+        <Form.Item label={t("Duration")} style={styles.formItem}>
           <div style={styles.durationContainer}>
             <Input
               name="duration"
               value={courseData.duration}
               onChange={handleInputChange}
-              placeholder="Enter duration"
+              placeholder={t("Enter duration")}
               type="number"
               style={styles.durationInput}
             />
@@ -120,9 +123,10 @@ const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
               onChange={handleDurationTypeChange}
               style={styles.select}
             >
-              <Option value="hour">Hour</Option>
-              <Option value="month">Month</Option>
-              <Option value="year">Year</Option>
+              <Option value="hour">{t("hour")}</Option>
+              <Option value="day">{t("day")}</Option>
+              <Option value="month">{t("month")}</Option>
+              <Option value="year">{t("year")}</Option>
             </Select>
           </div>
         </Form.Item>
@@ -135,10 +139,10 @@ const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
             //style={{ marginRight: 8 }}
             style={styles.saveButton}
           >
-            Save
+            {t("Save")}
           </Button>
           <Button onClick={handleCancel} style={styles.cancelButton}>
-            Cancel
+            {t("cancel")}
           </Button>
         </Form.Item>
       </Form>
@@ -152,8 +156,8 @@ const styles: any = {
     margin: "auto",
     padding: "20px",
     borderRadius: "8px",
-    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#f7f9fc",
+    //boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+    //backgroundColor: "#f7f9fc",
   },
   title: {
     textAlign: "center",

@@ -19,6 +19,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 import { jwtDecode } from "jwt-decode";
 import { signin } from "../../../redux/action/auth";
+import { useTranslation } from "react-i18next";
 
 const { Title } = Typography;
 
@@ -31,6 +32,8 @@ const Login: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialState);
+
+  const { t, i18n } = useTranslation();
 
   const token = localStorage.getItem("user");
 
@@ -82,7 +85,7 @@ const Login: React.FC = () => {
             style={{ backgroundColor: "#1890ff", marginBottom: "10px" }}
             icon={<LockOutlined />}
           />
-          <Title level={3}>Sign In</Title>
+          <Title level={3}>{t("Sign In")}</Title>
         </div>
 
         <Form
@@ -93,7 +96,7 @@ const Login: React.FC = () => {
         >
           {/* Email Field */}
           <Form.Item
-            label="Email Address"
+            label={t("Email Address")}
             name="email"
             rules={[
               {
@@ -102,13 +105,13 @@ const Login: React.FC = () => {
               },
               {
                 required: true,
-                message: "Please enter your email!",
+                message: t("Please enter your email!"),
               },
             ]}
           >
             <Input
               prefix={<MailOutlined />}
-              placeholder="Email"
+              placeholder={t("Email")}
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -118,18 +121,18 @@ const Login: React.FC = () => {
 
           {/* Password Field */}
           <Form.Item
-            label="Password"
+            label={t("Password")}
             name="password"
             rules={[
               {
                 required: true,
-                message: "Please enter your password!",
+                message: t("Please enter your password!"),
               },
             ]}
           >
             <Input.Password
               prefix={<LockOutlined />}
-              placeholder="Password"
+              placeholder={t("Password")}
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
@@ -148,21 +151,22 @@ const Login: React.FC = () => {
             }}
           >
             <Link to="/forgot-password" style={{ color: "#1890ff" }}>
-              Forgot password?
+              {t("Forgot password?")}
             </Link>
           </div>
 
           {/* Submit Button */}
           <Form.Item>
             <Button type="primary" htmlType="submit" block>
-              Sign In
+              {t("Sign In")}
             </Button>
           </Form.Item>
         </Form>
 
         <div style={{ textAlign: "center", marginTop: "10px" }}>
           <Typography.Text>
-            Don't have an account? <Link to="/register">Sign Up</Link>
+            {t("Don't have an account?")}{" "}
+            <Link to="/register">{t("Sign Up")}</Link>
           </Typography.Text>
         </div>
       </div>

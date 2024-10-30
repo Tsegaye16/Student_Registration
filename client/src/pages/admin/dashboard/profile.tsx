@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { changePassword, updateProfile } from "../../../redux/action/user";
+import { useTranslation } from "react-i18next";
 
 const { Title } = Typography;
 //const { Meta } = Card;
@@ -111,6 +112,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
+  const { t, i18n } = useTranslation();
+
   const handleChangePassword = async () => {
     const response = await dispatch(
       changePassword({
@@ -133,9 +136,9 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
     <Row gutter={[16, 16]}>
       {/* Profile Section */}
       <Col xs={24} sm={24} md={12}>
-        <Card title="Profile" bordered={false}>
+        <Card title={t("Your Profile")} bordered={false}>
           <Form layout="vertical">
-            <Form.Item label="Profile Photo">
+            <Form.Item label={t("Profile Photo")}>
               <Upload
                 name="image"
                 listType="picture-circle"
@@ -158,7 +161,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
               </Upload>
             </Form.Item>
 
-            <Form.Item label="Name">
+            <Form.Item label={t("Name")}>
               <Input
                 name="name"
                 value={userData.name}
@@ -166,7 +169,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
               />
             </Form.Item>
 
-            <Form.Item label="Email">
+            <Form.Item label={t("Email")}>
               <Input
                 name="email"
                 value={userData.email}
@@ -182,21 +185,21 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                 icon={<EditOutlined />}
                 style={{ marginRight: 8 }}
               >
-                Save
+                {t("Save")}
               </Button>
               <Button
                 type="default"
                 style={{ float: "right" }}
                 onClick={() => setShowChangePassword(true)}
               >
-                Change Password
+                {t("Change Password")}
               </Button>
             </Form.Item>
           </Form>
           {showChangePassword ? (
             <Form layout="vertical">
               <Form.Item
-                label="Current password"
+                label={t("Current password")}
                 name="currentPassword"
                 rules={[
                   {
@@ -206,7 +209,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                 ]}
               >
                 <Input.Password
-                  placeholder="Enter current password"
+                  placeholder={t("Enter current password")}
                   iconRender={(visible) =>
                     visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                   }
@@ -215,7 +218,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
               </Form.Item>
 
               <Form.Item
-                label="New password"
+                label={t("New password")}
                 name="newPassword"
                 rules={[
                   {
@@ -225,7 +228,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                 ]}
               >
                 <Input.Password
-                  placeholder="Enter new password"
+                  placeholder={t("Enter new password")}
                   iconRender={(visible) =>
                     visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                   }
@@ -244,14 +247,14 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                       style={{ marginRight: 8 }}
                       onClick={handleChangePassword}
                     >
-                      Save
+                      {t("Save")}
                     </Button>
                     <Button
                       type="default"
                       style={{ float: "right" }}
                       onClick={() => setShowChangePassword(false)}
                     >
-                      cancel
+                      {t("cancel")}
                     </Button>
                   </Col>
                 </Row>

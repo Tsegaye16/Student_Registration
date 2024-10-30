@@ -8,6 +8,7 @@ export const addCourse = async (req, res) => {
     await course.save();
     res.status(200).json({ message: "Course added successfully", course });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };

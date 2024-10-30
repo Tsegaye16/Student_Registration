@@ -6,15 +6,13 @@ import {
   Badge,
   Dropdown,
   Typography,
-  // notification,
   Button,
+  Select,
 } from "antd";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   DashboardOutlined,
-  NotificationOutlined,
-  //  SettingOutlined,
   LogoutOutlined,
   BookOutlined,
   UserOutlined,
@@ -28,7 +26,6 @@ import { LOGOUT } from "../../../constant/actionType";
 import { jwtDecode } from "jwt-decode";
 import { getUserById } from "../../../redux/action/user";
 import Profile from "./profile";
-//import Student from "../student/student";
 import Course from "../course/course";
 import AddCourse from "../course/addCourse";
 import EditCourse from "../course/editCourse";
@@ -37,9 +34,11 @@ import ActiveStudent from "../student/activeStudent";
 import GraduatedStudent from "../student/graduatedStudent";
 import Attendance from "../Attendance/attendance";
 import StudentDetail from "../student/studentDetail";
+import { useTranslation } from "react-i18next";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
+const { Option } = Select;
 
 const Dashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -68,7 +67,6 @@ const Dashboard = () => {
   const handleLogout = async () => {
     await dispatch({ type: LOGOUT });
     localStorage.removeItem("user");
-    //notification.warning({ message: "You are logged out" });
     navigate("/");
   };
 
@@ -144,17 +142,20 @@ const Dashboard = () => {
   const isSelectEditCourseEmpty = Object.values(selectEditCourse).every(
     (value) => value === ""
   );
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("language", lang); // Save to localStorage
+  };
 
   const menu = (
     <Menu onClick={({ key }) => handleMenuItemClick(key)}>
       <Menu.Item key="profile" icon={<UserOutlined />}>
-        Profile
+        {t("Profile")}
       </Menu.Item>
-      {/* <Menu.Item key="setting" icon={<SettingOutlined />}>
-        Settings
-      </Menu.Item> */}
       <Menu.Item key="3" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Logout
+        {t("Logout")}
       </Menu.Item>
     </Menu>
   );
@@ -174,18 +175,17 @@ const Dashboard = () => {
         </div>
 
         <Menu
-          //theme="light"
           defaultSelectedKeys={["Dashboard"]}
           mode="inline"
           onClick={({ key }) => handleMenuItemClick(key)}
         >
           <Menu.Item key="Dashboard" icon={<DashboardOutlined />}>
-            Dashboard
+            {t("dashboard")}
           </Menu.Item>
 
           <Menu.SubMenu
             key="Students"
-            title="Students"
+            title={t("Students")}
             icon={<UserOutlined />} // Icon representing a person or user, suitable for "Students"
             onTitleClick={handleStudentsClick}
           >
@@ -194,20 +194,20 @@ const Dashboard = () => {
               icon={<CheckCircleOutlined />} // Represents active or ongoing status
               style={{ userSelect: "none" }}
             >
-              Active Student
+              {t("Active Student")}
             </Menu.Item>
             <Menu.Item
               key="Graduated"
               icon={<TrophyOutlined />} // Represents achievement or completion, suitable for "Graduated Student"
             >
-              Graduated Student
+              {t("Graduated Student")}
             </Menu.Item>
           </Menu.SubMenu>
           <Menu.Item key="Attendance" icon={<ClockCircleOutlined />}>
-            Attendance
+            {t("Attendance")}
           </Menu.Item>
           <Menu.Item key="Course" icon={<BookOutlined />}>
-            Course
+            {t("Course")}
           </Menu.Item>
         </Menu>
       </Sider>
@@ -245,6 +245,14 @@ const Dashboard = () => {
                 paddingRight: "20px",
               }}
             >
+              <Select
+                defaultValue={i18n.language}
+                style={{ width: 120 }}
+                onChange={changeLanguage}
+              >
+                <Option value="en">English</Option>
+                <Option value="am">አማረኛ</Option>
+              </Select>
               <Dropdown overlay={menu} trigger={["click"]}>
                 <Avatar
                   src={`http://localhost:4000/${user?.image}`}

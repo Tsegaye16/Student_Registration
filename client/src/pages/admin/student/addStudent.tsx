@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Input, Button, Select, Form, Typography, message } from "antd";
 import { addStudent } from "../../../redux/action/student";
 import { getAllCourse } from "../../../redux/action/course";
+import { useTranslation } from "react-i18next";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -21,6 +22,8 @@ const AddStudent: React.FC<propType> = ({ onSave }) => {
 
   const courses = useSelector((state: any) => state.course?.courseData?.result);
   const dispatch = useDispatch();
+
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     dispatch(getAllCourse() as any);
@@ -66,34 +69,34 @@ const AddStudent: React.FC<propType> = ({ onSave }) => {
   return (
     <div style={styles.container}>
       <Title level={3} style={styles.title}>
-        Registering Student
+        {t("Registering Student")}
       </Title>
       <Form layout="vertical" style={styles.form}>
-        <Form.Item label="Student Name" style={styles.formItem}>
+        <Form.Item label={t("Student Name")} style={styles.formItem}>
           <Input
             name="name"
             value={studentData.name}
             onChange={handleInputChange}
-            placeholder="Enter student name"
+            placeholder={t("Enter student name")}
             style={styles.input}
           />
         </Form.Item>
 
-        <Form.Item label="Phone Number" style={styles.formItem}>
+        <Form.Item label={t("Phone Number")} style={styles.formItem}>
           <Input
             name="phoneNumber"
             value={studentData.phoneNumber}
             onChange={handleInputChange}
-            placeholder="Enter student phone number"
+            placeholder={t("Enter student phone number")}
             style={styles.input}
           />
         </Form.Item>
 
         {/* Course and Shift Selection */}
         <div style={styles.horizontalContainer}>
-          <Form.Item label="Select Course" style={styles.formItem}>
+          <Form.Item label={t("Select course")} style={styles.formItem}>
             <Select
-              placeholder="Select a course"
+              placeholder="Select course"
               onChange={handleCourseChange}
               value={studentData.course}
               style={styles.select}
@@ -106,25 +109,25 @@ const AddStudent: React.FC<propType> = ({ onSave }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="Shift" style={styles.formItem}>
+          <Form.Item label={t("Select shift")} style={styles.formItem}>
             <Select
-              placeholder="Select shift"
+              placeholder={t("Select shift")}
               onChange={handleShiftChange}
               value={studentData.shift}
               style={styles.select}
             >
-              <Option value="evening">Evening</Option>
-              <Option value="afternoon">Afternoon</Option>
+              <Option value="afternoon">{t("Morning")}</Option>
+              <Option value="evening">{t("Evining")}</Option>
             </Select>
           </Form.Item>
         </div>
 
         <Form.Item style={styles.formItem}>
           <Button type="primary" onClick={handleSave} style={styles.saveButton}>
-            Save
+            {t("Save")}
           </Button>
           <Button onClick={handleCancel} style={styles.cancelButton}>
-            Cancel
+            {t("cancel")}
           </Button>
         </Form.Item>
       </Form>
@@ -138,8 +141,8 @@ const styles: any = {
     margin: "auto",
     padding: "20px",
     borderRadius: "8px",
-    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#f7f9fc",
+    //boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+    //backgroundColor: "#f7f9fc",
   },
   title: {
     textAlign: "center",

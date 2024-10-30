@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 import { TableRowSelection } from "antd/es/table/interface";
 import { deleteStudent, getAllStudent } from "../../../redux/action/student";
+import { useTranslation } from "react-i18next";
 const { Title } = Typography;
 
 interface props {
@@ -21,6 +22,8 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
   const students = useSelector(
     (state: any) => state.student?.studentData?.result
   );
+
+  const { t, i18n } = useTranslation();
 
   const confirmDelete = async (studentIds: string[]) => {
     const response = await dispatch(deleteStudent(studentIds) as any);
@@ -42,21 +45,21 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
   }, [dispatch]);
 
   const column = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
+    { title: t("Name"), dataIndex: "name", key: "name" },
+    { title: t("Phone Number"), dataIndex: "phoneNumber", key: "phoneNumber" },
     {
-      title: "Action",
+      title: t("Action"),
       key: "action",
       render: (text: any, record: any) => (
         <Space size="middle">
           <Popconfirm
-            title="Are you sure you want to delete this student?"
+            title={t("Are you sure you want to delete this student?")}
             onConfirm={() => confirmDelete([record.id])} // Send single ID in an array
-            okText="Yes"
-            cancelText="No"
+            okText={t("Yes")}
+            cancelText={t("No")}
           >
             <Button type="link" icon={<DeleteOutlined />} danger>
-              Delete
+              {t("Delete")}
             </Button>
             <Button
               type="link"
@@ -66,7 +69,7 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
                 onDetailStudent(record);
               }}
             >
-              Detail
+              {t("Detail")}
             </Button>
           </Popconfirm>
         </Space>
@@ -95,7 +98,7 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
           marginBottom: "16px",
         }}
       >
-        <Title level={5}>Student List</Title>
+        <Title level={5}>{t("Student List")}</Title>
 
         <Button
           type="primary"
@@ -105,7 +108,7 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
             onAddStudent(true);
           }}
         >
-          Register student
+          {t("Register student")}
         </Button>
       </div>
       <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>

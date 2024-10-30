@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Table, Checkbox, Typography, Button, message } from "antd";
 import { getAllStudent, markAttendance } from "../../../redux/action/student";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const { Text } = Typography;
 
@@ -17,6 +18,8 @@ const Attendance: React.FC = () => {
   const students = useSelector(
     (state: any) => state.student?.studentData?.result
   ) as Student[];
+
+  const { t } = useTranslation();
 
   console.log("Students: ", students);
 
@@ -76,11 +79,6 @@ const Attendance: React.FC = () => {
     });
   };
 
-  // Check if there is at least one present student
-  const hasPresentStudent = Object.values(attendanceData).some((studentDays) =>
-    Object.values(studentDays).some((status) => status)
-  );
-
   // Save only today's attendance data to the backend
   const handleSave = async () => {
     const today = moment().format("YYYY-MM-DD");
@@ -132,7 +130,7 @@ const Attendance: React.FC = () => {
 
   const columns = [
     {
-      title: "Student Name",
+      title: t("Student Name"),
       dataIndex: "name",
       key: "name",
       render: (text: string) => <Text strong>{text}</Text>,
@@ -144,7 +142,7 @@ const Attendance: React.FC = () => {
       const isToday = currentDate.isSame(moment(), "day");
 
       return {
-        title: day,
+        title: `${t(day)}`,
         key: day,
         render: (_: any, record: Student) => {
           const isChecked = attendanceData[record.id]?.[day] ?? false;
@@ -175,7 +173,7 @@ const Attendance: React.FC = () => {
         dataSource={data}
         pagination={false}
         bordered
-        title={() => "Weekly Attendance"}
+        title={() => t("Weekly Attendance")}
       />
 
       <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
