@@ -16,8 +16,8 @@ const AttendanceDetail: React.FC<PropType> = ({ record }) => {
   const student = useSelector((state: any) => state.student?.selectedStudent);
   const courses = useSelector((state: any) => state.course?.courseData);
 
-  const courseDuration = courses.find(
-    (course: any) => course.name === student.course
+  const courseDuration = courses?.find(
+    (course: any) => course?.name === student.course
   )?.duration;
   const [currentMonth, setCurrentMonth] = useState(dayjs());
 
