@@ -42,7 +42,7 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
   const [progressPercent, setProgressPercent] = useState(0);
 
   // Update progress percentage when start date or selected course changes
-  const courses = useSelector((state: any) => state.course?.courseData?.result);
+  const courses = useSelector((state: any) => state.course?.courseData);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 

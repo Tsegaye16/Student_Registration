@@ -35,6 +35,7 @@ import GraduatedStudent from "../student/graduatedStudent";
 import Attendance from "../Attendance/attendance";
 import StudentDetail from "../student/studentDetail";
 import { useTranslation } from "react-i18next";
+import AttendanceDetail from "../Attendance/attendanceDetail";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -52,6 +53,8 @@ const Dashboard = () => {
   });
   const [selectAddStudent, setSelectAddStudent] = useState(false);
   const [selectDetail, setSelectDetail] = useState(null);
+  const [selectedAttendanceDetail, setSelectedAttendanceDetail] =
+    useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -105,6 +108,7 @@ const Dashboard = () => {
     });
     setSelectAddStudent(false);
     setSelectDetail(null);
+    setSelectedAttendanceDetail(null);
   };
   const handleAddCourse = () => {
     setSelectedAddCourse(true);
@@ -125,6 +129,10 @@ const Dashboard = () => {
 
   const handleDetailClick = (record: any) => {
     setSelectDetail(record);
+  };
+
+  const handleAttendanceDetailClick = (record: any) => {
+    setSelectedAttendanceDetail(record);
   };
 
   const handleCancel = () => {
@@ -269,6 +277,8 @@ const Dashboard = () => {
             <AddCourse onSave={handleCancel} />
           ) : !isSelectEditCourseEmpty ? (
             <EditCourse courseInfo={selectEditCourse} onSave={handleCancel} />
+          ) : selectedAttendanceDetail ? (
+            <AttendanceDetail record={selectedAttendanceDetail} />
           ) : selectAddStudent ? (
             <AddStudent onSave={handleCancel} />
           ) : selectDetail ? (
@@ -294,7 +304,9 @@ const Dashboard = () => {
                 />
               )}
               {selectedItem === "Graduated" && <GraduatedStudent />}
-              {selectedItem === "Attendance" && <Attendance />}
+              {selectedItem === "Attendance" && (
+                <Attendance onDetailClick={handleAttendanceDetailClick} />
+              )}
             </>
           )}
         </Content>

@@ -5,6 +5,7 @@ import {
   DELETE_STUDENT,
   UPDATE_STUDENT_BY_ID,
   MARK_ATTENDANCE,
+  GET_STUDENT_BY_ID,
 } from "../../constant/actionType";
 import * as api from "../api/api";
 
@@ -18,6 +19,20 @@ export const getAllStudent = createAsyncThunk(
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const getStudentById = createAsyncThunk(
+  GET_STUDENT_BY_ID,
+  async (id: any, { rejectWithValue }) => {
+    try {
+      const response = await api.getStudentById(id);
+      return response.data;
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message || "Something went wrong";
       return rejectWithValue(errorMessage);
     }
   }

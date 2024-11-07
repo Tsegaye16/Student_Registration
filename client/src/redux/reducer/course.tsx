@@ -9,7 +9,7 @@ import {
 const courseSlice = createSlice({
   name: "course",
   initialState: {
-    courseData: null,
+    courseData: [] as any[],
     loading: false,
     error: null,
   },
@@ -21,27 +21,23 @@ const courseSlice = createSlice({
       })
       .addCase(getAllCourse.fulfilled, (state, action) => {
         state.loading = false;
-        state.courseData = action.payload;
+        //console.log("Course", action.payload);
+        state.courseData = action.payload.result;
       })
       .addCase(getAllCourse.rejected, (state: any, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       .addCase(addCourse.fulfilled, (state, action) => {
-        state.courseData = action.payload; // Handle added course
+        state.courseData = action.payload.result; // Handle added course
       })
       .addCase(deleteCourse.fulfilled, (state: any, action) => {
         const deletedIds = action.meta.arg;
 
-        if (state.courseData && Array.isArray(state.courseData.result)) {
-          // Return a new array reference for reactivity
-          state.courseData = {
-            ...state.courseData,
-            result: state.courseData.result.filter(
-              (course: any) => !deletedIds.includes(course.id)
-            ),
-          };
-        }
+        // Return a new array reference for reactivity
+        state.courseData = state.courseData.filter(
+          (course: any) => !deletedIds.includes(course.id)
+        );
       })
       .addCase(updateCourse.fulfilled, (state, action) => {
         state.courseData = action.payload;

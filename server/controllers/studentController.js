@@ -8,7 +8,18 @@ export const getAllStudent = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+export const getStudentById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const student = await Student.findOne({ where: { id: id } });
+    if (!student) {
+      return res.status(404).json({ message: "student not found" });
+    }
+    res.status(200).json({ message: "successfull", result: student });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 export const addStudent = async (req, res) => {
   try {
     console.log(req.body);

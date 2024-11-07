@@ -20,10 +20,10 @@ interface props {
 const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
   const dispatch = useDispatch();
   const students = useSelector(
-    (state: any) => state.student?.studentData?.result
+    (state: any) => state.student?.studentData || []
   );
-
-  const { t, i18n } = useTranslation();
+  //console.log("students: ", students);
+  const { t } = useTranslation();
 
   const confirmDelete = async (studentIds: string[]) => {
     const response = await dispatch(deleteStudent(studentIds) as any);

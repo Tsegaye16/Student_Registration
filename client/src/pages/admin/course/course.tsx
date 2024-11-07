@@ -24,7 +24,7 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const courses = useSelector((state: any) => state.course?.courseData?.result);
+  const courses = useSelector((state: any) => state.course?.courseData);
   //console.log("courses: ", courses);
   // General delete handler for both single and multiple deletions
   const confirmDelete = async (courseIds: string[]) => {

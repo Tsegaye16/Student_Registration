@@ -110,6 +110,14 @@ export const getAllStudent = async () => {
   }
 };
 
+export const getStudentById = async (id: string) => {
+  try {
+    return await API.get(`/getStudentById/${id}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const addStudent = async (data: any) => {
   try {
     return await API.post("/addStudent", data);

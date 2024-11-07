@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, Checkbox, Typography, Button, message } from "antd";
+import { Table, Checkbox, Typography, Button, message, Space } from "antd";
 import { getAllStudent, markAttendance } from "../../../redux/action/student";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
@@ -11,17 +11,24 @@ interface Student {
   id: string;
   name: string;
   attendance: { date: string; status: "present" | "absent" }[];
+  // startDate:any
 }
 
-const Attendance: React.FC = () => {
-  const dispatch = useDispatch();
-  const students = useSelector(
-    (state: any) => state.student?.studentData?.result
-  ) as Student[];
+interface propType {
+  onDetailClick: any;
+}
 
+const Attendance: React.FC<propType> = ({ onDetailClick }) => {
+  const dispatch = useDispatch();
+  const rowData = useSelector(
+    (state: any) => state.student?.studentData
+  ) as Student[];
+  const students = rowData.filter((student: any) => student.startDate !== null);
+
+  //console.log("Filtered: ", filtered);
   const { t } = useTranslation();
 
-  console.log("Students: ", students);
+  //console.log("Students: ", students);
 
   const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const [attendanceData, setAttendanceData] = useState<{
@@ -157,6 +164,24 @@ const Attendance: React.FC = () => {
         },
       };
     }),
+    {
+      title: t("Action"),
+      key: "actions",
+      render: (text: string, record: Student) => (
+        <Space size="middle">
+          <Button
+            type="link"
+            onClick={(event) => {
+              event.stopPropagation();
+              onDetailClick(text);
+            }}
+          >
+            {" "}
+            {t("Detail")}
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   // Map students to table rows

@@ -3,25 +3,19 @@ import {
   addStudent,
   deleteStudent,
   getAllStudent,
+  getStudentById,
   markAttendance,
+  updateStudent,
 } from "../action/student";
-import { updateStudent } from "../action/student";
-
-interface StudentState {
-  studentData: any[]; // Define as an array type to avoid null issues
-  loading: boolean;
-  error: string | null;
-}
-
-const initialState: StudentState = {
-  studentData: [], // Start with an empty array to prevent null
-  loading: false,
-  error: null,
-};
 
 const studentSlice = createSlice({
   name: "student",
-  initialState,
+  initialState: {
+    studentData: [] as any[], // Array for all students
+    selectedStudent: null as any | null, // Object for a single student
+    loading: false,
+    error: null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -29,69 +23,69 @@ const studentSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        getAllStudent.fulfilled,
-        (state, action: PayloadAction<any[]>) => {
-          state.studentData = action.payload;
-          state.loading = false;
-        }
-      )
-      .addCase(getAllStudent.rejected, (state, action) => {
+      .addCase(getAllStudent.fulfilled, (state, action: any) => {
+        state.studentData = action.payload.result; // Set list of students
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch students";
+      })
+      .addCase(getAllStudent.rejected, (state: any, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getStudentById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getStudentById.fulfilled, (state, action: any) => {
+        state.selectedStudent = action.payload.result; // Set single student
+        state.loading = false;
+      })
+      .addCase(getStudentById.rejected, (state: any, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(addStudent.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(addStudent.fulfilled, (state, action: PayloadAction<any>) => {
-        state.studentData.push(action.payload); // Directly pushing the new student
+        state.studentData.push(action.payload.data); // Push new student to students array
         state.loading = false;
       })
-      .addCase(addStudent.rejected, (state, action) => {
+      .addCase(addStudent.rejected, (state: any, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to add student";
+        state.error = action.payload;
       })
-      .addCase(deleteStudent.fulfilled, (state: any, action: any) => {
+      .addCase(deleteStudent.fulfilled, (state, action: any) => {
         const deletedIds = action.meta.arg;
         state.studentData = state.studentData.filter(
           (student: any) => !deletedIds.includes(student.id)
         );
       })
-      .addCase(updateStudent.fulfilled, (state: any, action: any) => {
+      .addCase(updateStudent.fulfilled, (state, action: any) => {
         const updatedStudent = action.payload;
-        state.studentData = state.studentData.map((student: any) => {
-          if (student.id === updatedStudent.id) {
-            return updatedStudent;
-          }
-          return student;
-        });
+        state.studentData = state.studentData.map((student: any) =>
+          student.id === updatedStudent.id ? updatedStudent : student
+        );
       })
       .addCase(
         markAttendance.fulfilled,
         (state, action: PayloadAction<any[]>) => {
           const attendanceData = Array.isArray(action.payload)
             ? action.payload
-            : []; // Ensure attendanceData is an array
-
+            : [];
           attendanceData.forEach((record) => {
             const studentIndex = state.studentData.findIndex(
               (student) => student.id === record.studentId
             );
-
             if (studentIndex !== -1) {
               const student = state.studentData[studentIndex];
-
               if (!student.attendance) {
-                student.attendance = []; // Initialize attendance if not present
+                student.attendance = [];
               }
-
               const existingAttendance = student.attendance.find(
                 (att: any) => att.date === record.date
               );
-
               if (existingAttendance) {
-                existingAttendance.status = record.status; // Update status if it exists
+                existingAttendance.status = record.status;
               } else {
                 student.attendance.push({
                   date: record.date,
