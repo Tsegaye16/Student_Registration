@@ -20,10 +20,9 @@ interface propType {
 
 const Attendance: React.FC<propType> = ({ onDetailClick }) => {
   const dispatch = useDispatch();
-  const rowData = useSelector(
+  const students = useSelector(
     (state: any) => state.student?.studentData
   ) as Student[];
-  const students = rowData.filter((student: any) => student.startDate !== null);
 
   //console.log("Filtered: ", filtered);
   const { t } = useTranslation();
@@ -153,7 +152,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
         key: day,
         render: (_: any, record: Student) => {
           const isChecked = attendanceData[record.id]?.[day] ?? false;
-
+          //console.log("Record", attendanceData[record.id]);
           return (
             <Checkbox
               checked={isChecked}
