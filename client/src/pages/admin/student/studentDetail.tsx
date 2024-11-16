@@ -36,6 +36,8 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
     course: "",
     shift: "",
     startDate: null as moment.Moment | null,
+    paymentStatus: "",
+    amountPaid: 0,
   });
 
   const [isDataChanged, setIsDataChanged] = useState(false);
@@ -53,7 +55,7 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
   useEffect(() => {
     calculateProgress();
   }, [student.startDate, student.course]);
-  console.log("Progress", progressPercent);
+  //console.log("Progress", progressPercent);
 
   const calculateProgress = () => {
     const selectedCourse = courses?.find(
@@ -101,6 +103,8 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
         course: studentInfo.course,
         shift: studentInfo.shift,
         startDate: studentInfo.startDate ? moment(studentInfo.startDate) : null,
+        paymentStatus: studentInfo.paymentStatus,
+        amountPaid: studentInfo.amountPaid,
       });
     }
   }, [studentInfo]);
@@ -121,6 +125,10 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
   };
   const handleShift = (shift: any) => {
     setStudent({ ...student, shift });
+    setIsDataChanged(true);
+  };
+  const handlePaymentStatus = (paymentStatus: string) => {
+    setStudent({ ...student, paymentStatus });
     setIsDataChanged(true);
   };
 
@@ -238,11 +246,13 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
         <Form.Item label={t("Payment Status")} style={styles.formItem}>
           <Select
             style={{ width: "70%" }}
+            value={student?.paymentStatus}
+            onChange={handlePaymentStatus}
             placeholder={t("Select payment status")}
           >
-            <Option value="Paid">{t("Paid")}</Option>
-            <Option value="Unpaid">{t("Unpaid")}</Option>
-            <Option value="Partially">{t("Partially")}</Option>
+            <Option value="paid">{t("Paid")}</Option>
+            <Option value="unpaid">{t("Unpaid")}</Option>
+            <Option value="partially">{t("Partially")}</Option>
           </Select>
         </Form.Item>
         <Form.Item label={t("Amount Paid")} style={styles.formItem}>
@@ -250,6 +260,7 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
             style={{ width: "70%" }}
             name="amountPaid"
             placeholder={t("Enter amount")}
+            value={student?.amountPaid}
             onChange={handleinputChange}
           />
         </Form.Item>

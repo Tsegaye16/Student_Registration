@@ -40,6 +40,16 @@ const Student = sequelize.define("Student", {
       notEmpty: { msge: "Shift is required" },
     },
   },
+  paymentStatus: {
+    type: DataTypes.ENUM("paid", "unpaid", "partially"),
+    allowNull: false,
+    defaultValue: "unpaid",
+  },
+  amountPaid: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0.0,
+  },
   attendance: {
     type: DataTypes.JSON,
     allowNull: true,
