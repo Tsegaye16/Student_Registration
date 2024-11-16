@@ -22,7 +22,7 @@ export const getStudentById = async (req, res) => {
 };
 export const addStudent = async (req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     const student = new Student(req.body);
 
     await student.save();
@@ -57,9 +57,25 @@ export const updateStudent = async (req, res) => {
   try {
     const id = req.params.id;
     console.log("Id: ", id);
-    const { name, phoneNumber, course, startDate, shift } = req.body;
+    const {
+      name,
+      phoneNumber,
+      course,
+      startDate,
+      shift,
+      paymentStatus,
+      amountPaid,
+    } = req.body;
     const student = await Student.update(
-      { name, phoneNumber, course, startDate, shift },
+      {
+        name,
+        phoneNumber,
+        course,
+        startDate,
+        shift,
+        paymentStatus,
+        amountPaid,
+      },
       {
         where: { id: id },
       }

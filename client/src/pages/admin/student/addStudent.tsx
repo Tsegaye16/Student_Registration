@@ -20,7 +20,8 @@ const AddStudent: React.FC<propType> = ({ onSave }) => {
     shift: "", // New field for shift
   });
 
-  const courses = useSelector((state: any) => state.course?.courseData?.result);
+  //const courses = useSelector((state: any) => state.course?.courseData?.result);
+  const courses = useSelector((state: any) => state.course?.courseData);
   const dispatch = useDispatch();
 
   const { t, i18n } = useTranslation();
