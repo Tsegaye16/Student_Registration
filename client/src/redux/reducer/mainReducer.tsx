@@ -3,6 +3,7 @@ import authReducer from "./auth";
 import userReducer from "./user";
 import courseReducer from "./course";
 import studentReducer from "./student";
+import gradeReducer from "./grade";
 import { logOut } from "./auth"; // Import logOut action for resetting state
 
 const appReducer = combineReducers({
@@ -10,6 +11,7 @@ const appReducer = combineReducers({
   user: userReducer,
   course: courseReducer,
   student: studentReducer,
+  grade: gradeReducer,
 });
 
 const rootReducer = (state: any, action: any) => {

@@ -90,5 +90,10 @@
   "Wednesday": "Wednesday",
   "Thursday": "Thursday",
   "Friday": "Friday",
-  "Weekly Attendance": "Weekly Attendance"
+  "Weekly Attendance": "Weekly Attendance",
+  "Grade": "Grade",
+  "Written Exam": "Written Exam",
+  "Practice Exam": "Practice Exam",
+  "Exit Exam": "Exit Exam",
+  "Total Result": "Total Result"
 }

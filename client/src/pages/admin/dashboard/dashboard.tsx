@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Layout,
   Menu,
   Avatar,
-  Badge,
   Dropdown,
   Typography,
   Button,
@@ -19,6 +18,7 @@ import {
   CheckCircleOutlined,
   TrophyOutlined,
   ClockCircleOutlined,
+  ReadOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +36,7 @@ import Attendance from "../Attendance/attendance";
 import StudentDetail from "../student/studentDetail";
 import { useTranslation } from "react-i18next";
 import AttendanceDetail from "../Attendance/attendanceDetail";
+import Grade from "../grade/grade";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -194,20 +195,17 @@ const Dashboard = () => {
           <Menu.SubMenu
             key="Students"
             title={t("Students")}
-            icon={<UserOutlined />} // Icon representing a person or user, suitable for "Students"
+            icon={<UserOutlined />}
             onTitleClick={handleStudentsClick}
           >
             <Menu.Item
               key="Active"
-              icon={<CheckCircleOutlined />} // Represents active or ongoing status
+              icon={<CheckCircleOutlined />}
               style={{ userSelect: "none" }}
             >
               {t("Active Student")}
             </Menu.Item>
-            <Menu.Item
-              key="Graduated"
-              icon={<TrophyOutlined />} // Represents achievement or completion, suitable for "Graduated Student"
-            >
+            <Menu.Item key="Graduated" icon={<TrophyOutlined />}>
               {t("Graduated Student")}
             </Menu.Item>
           </Menu.SubMenu>
@@ -216,6 +214,9 @@ const Dashboard = () => {
           </Menu.Item>
           <Menu.Item key="Course" icon={<BookOutlined />}>
             {t("Course")}
+          </Menu.Item>
+          <Menu.Item key="Grade" icon={<ReadOutlined />}>
+            {t("Grade")}
           </Menu.Item>
         </Menu>
       </Sider>
@@ -307,6 +308,7 @@ const Dashboard = () => {
               {selectedItem === "Attendance" && (
                 <Attendance onDetailClick={handleAttendanceDetailClick} />
               )}
+              {selectedItem === "Grade" && <Grade />}
             </>
           )}
         </Content>

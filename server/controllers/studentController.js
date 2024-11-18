@@ -141,3 +141,72 @@ export const markAttendance = async (req, res) => {
     });
   }
 };
+
+export const getGrade = async (req, res) => {
+  try {
+    const students = await Student.findAll({
+      attributes: ["id", "name", "examScores"],
+    });
+    // console.log("students: ", students);
+    res.status(200).json({ message: "successfull", result: students });
+  } catch (error) {
+    console.error("Error getting grade:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message || "Something went wrong",
+    });
+  }
+};
+
+export const updateGrade = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const { exitExam, writenExam, practiceExam } = req.body;
+    // Validate the input to make sure the scores are valid numbers
+    if (
+      typeof exitExam !== "number" ||
+      typeof writenExam !== "number" ||
+      typeof practiceExam !== "number"
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "Exam scores must be valid numbers",
+      });
+    }
+
+    const updatedExamScores = {
+      exitExam,
+      writenExam,
+      practiceExam,
+    };
+
+    // Update the examScores field of the student with the given id
+    const [updatedCount, [updatedStudent]] = await Student.update(
+      { examScores: updatedExamScores }, // Set new exam scores
+      { where: { id: id }, returning: true } // Find the student by id
+    );
+
+    // Fetch the updated student data
+    //const updatedStudent = await Student.findOne({ where: { id: id } });
+
+    if (!updatedStudent) {
+      return res.status(404).json({
+        status: "error",
+        message: "Student not found",
+      });
+    }
+    console.log("exitExa: ", req);
+    res.status(200).json({
+      status: "success",
+      message: "Grade updated successfully",
+      data: updatedStudent, // Return the updated student data
+    });
+  } catch (error) {
+    console.error("Error updating grade:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message || "Something went wrong",
+    });
+  }
+};

@@ -150,3 +150,19 @@ export const markAttendance = async (data: any) => {
     throw error;
   }
 };
+
+export const getGrade = async () => {
+  try {
+    return await API.get("/getGrade");
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateGrade = async (id: string, data: any) => {
+  try {
+    return await API.put(`/updateGrade/${id}`, data);
+  } catch (error) {
+    throw error;
+  }
+};

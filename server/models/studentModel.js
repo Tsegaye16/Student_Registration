@@ -55,6 +55,15 @@ const Student = sequelize.define("Student", {
     allowNull: true,
     defaultValue: [], // Initialize as an empty array
   },
+  examScores: {
+    type: DataTypes.JSONB, // Use JSONB for better query performance in PostgreSQL
+    allowNull: false,
+    defaultValue: {
+      practiceExam: 0.0,
+      writenExam: 0.0,
+      exitExam: 0.0,
+    },
+  },
 });
 
 export default Student;
