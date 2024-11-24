@@ -16,10 +16,10 @@ const Grade = () => {
     dispatch(getGrade() as any);
   }, [dispatch]);
 
-  const isEditing = (record: any) => record.id === editingKey;
+  const isEditing = (record: any) => record._id === editingKey;
 
   const handleEdit = (record: any) => {
-    setEditingKey(record.id);
+    setEditingKey(record._id);
 
     setUpdatedData(record.examScores); // Set the initial examScores for the row being edited
     //setUpdatedData({ ...record.examScores, id: record.id });
@@ -115,7 +115,7 @@ const Grade = () => {
           <>
             <Button
               type="link"
-              onClick={() => handleSave(record.id)}
+              onClick={() => handleSave(record._id)}
               style={{ marginRight: 8 }}
             >
               {t("Save")}

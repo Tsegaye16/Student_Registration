@@ -1,51 +1,65 @@
-import { Op } from "sequelize";
-import Student from "../models/studentModel.js";
+import Student from "../models/studentModel.js"; // Mongoose Student model
+import mongoose from "mongoose";
+
+// Get All Students
 export const getAllStudent = async (req, res) => {
   try {
-    const students = await Student.findAll();
-    res.status(200).json({ message: "successfull", result: students });
+    const students = await Student.find(); // Fetch all students
+    res.status(200).json({ message: "successful", result: students });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get Student by ID
 export const getStudentById = async (req, res) => {
   try {
     const id = req.params.id;
-    const student = await Student.findOne({ where: { id: id } });
-    if (!student) {
-      return res.status(404).json({ message: "student not found" });
+
+    // Validate MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid student ID" });
     }
-    res.status(200).json({ message: "successfull", result: student });
+
+    const student = await Student.findById(id); // Find student by ID
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    res.status(200).json({ message: "successful", result: student });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Add Student
 export const addStudent = async (req, res) => {
   try {
-    //console.log(req.body);
-    const student = new Student(req.body);
+    const student = new Student(req.body); // Create a new student document
 
-    await student.save();
+    await student.save(); // Save to the database
     res
       .status(200)
       .json({ message: "Student registered successfully", student });
   } catch (error) {
-    //console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
 
+// Delete Students by IDs
 export const deleteStudent = async (req, res) => {
   try {
     const { ids } = req.body;
-    // delete all course based on list of id
-    const result = await Student.destroy({
-      where: {
-        id: {
-          [Op.in]: ids,
-        },
-      },
-    });
+
+    // Validate IDs
+    if (
+      !Array.isArray(ids) ||
+      !ids.every((id) => mongoose.Types.ObjectId.isValid(id))
+    ) {
+      return res.status(400).json({ message: "Invalid student IDs" });
+    }
+
+    // Delete students with matching IDs
+    const result = await Student.deleteMany({ _id: { $in: ids } });
 
     res.status(200).json({ message: "success", result });
   } catch (error) {
@@ -53,81 +67,68 @@ export const deleteStudent = async (req, res) => {
   }
 };
 
+// Update Student
 export const updateStudent = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log("Id: ", id);
-    const {
-      name,
-      phoneNumber,
-      course,
-      startDate,
-      shift,
-      paymentStatus,
-      amountPaid,
-    } = req.body;
-    const student = await Student.update(
-      {
-        name,
-        phoneNumber,
-        course,
-        startDate,
-        shift,
-        paymentStatus,
-        amountPaid,
-      },
-      {
-        where: { id: id },
-      }
-    );
-    res.status(200).json({ message: "Student updated successfully", student });
+
+    // Validate MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid student ID" });
+    }
+
+    const updatedStudent = await Student.findByIdAndUpdate(id, req.body, {
+      new: true, // Return the updated document
+      runValidators: true, // Validate input fields
+    });
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.status(200).json({
+      message: "Student updated successfully",
+      student: updatedStudent,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Mark Attendance
 export const markAttendance = async (req, res) => {
-  const attendanceData = req.body;
-
   try {
+    const attendanceData = req.body;
+
     const updatePromises = attendanceData.map(async (attendance) => {
-      const student = await Student.findByPk(attendance.studentId);
+      const student = await Student.findById(attendance.studentId);
 
       if (!student) {
         throw new Error(`Student with ID ${attendance.studentId} not found`);
       }
 
-      // Check for existing attendance records
       const existingAttendance = student.attendance || [];
-
-      // Find if the attendance for the given date already exists
       const existingRecordIndex = existingAttendance.findIndex(
         (record) => record.date === attendance.date
       );
 
-      let updatedAttendance;
       if (existingRecordIndex !== -1) {
-        // If a record exists for the date, update the status
-        updatedAttendance = existingAttendance.map((record, index) =>
-          index === existingRecordIndex
-            ? { ...record, status: attendance.status }
-            : record
-        );
+        // Update existing record
+        existingAttendance[existingRecordIndex].status = attendance.status;
       } else {
-        // If no record exists for the date, add a new record
-        updatedAttendance = [
-          ...existingAttendance,
-          { date: attendance.date, status: attendance.status },
-        ];
+        // Add new record
+        existingAttendance.push({
+          date: attendance.date,
+          status: attendance.status,
+        });
       }
 
-      // Update the student record with the updated attendance
-      return student.update({ attendance: updatedAttendance });
+      student.attendance = existingAttendance;
+      return student.save();
     });
 
     const updatedStudents = await Promise.all(updatePromises);
 
-    // Send back updated students
     res.status(200).json({
       status: "success",
       message: "Attendance updated successfully",
@@ -142,13 +143,11 @@ export const markAttendance = async (req, res) => {
   }
 };
 
+// Get Grades
 export const getGrade = async (req, res) => {
   try {
-    const students = await Student.findAll({
-      attributes: ["id", "name", "examScores"],
-    });
-    // console.log("students: ", students);
-    res.status(200).json({ message: "successfull", result: students });
+    const students = await Student.find({}, "id name examScores"); // Fetch specific fields
+    res.status(200).json({ message: "successful", result: students });
   } catch (error) {
     console.error("Error getting grade:", error);
     res.status(500).json({
@@ -158,12 +157,14 @@ export const getGrade = async (req, res) => {
   }
 };
 
+// Update Grade
 export const updateGrade = async (req, res) => {
   try {
     const id = req.params.id;
-
+    console.log("Id: ", id);
     const { exitExam, writenExam, practiceExam } = req.body;
-    // Validate the input to make sure the scores are valid numbers
+
+    // Validate the input to ensure scores are valid numbers
     if (
       typeof exitExam !== "number" ||
       typeof writenExam !== "number" ||
@@ -175,32 +176,21 @@ export const updateGrade = async (req, res) => {
       });
     }
 
-    const updatedExamScores = {
-      exitExam,
-      writenExam,
-      practiceExam,
-    };
-
-    // Update the examScores field of the student with the given id
-    const [updatedCount, [updatedStudent]] = await Student.update(
-      { examScores: updatedExamScores }, // Set new exam scores
-      { where: { id: id }, returning: true } // Find the student by id
+    const updatedStudent = await Student.findByIdAndUpdate(
+      id,
+      { examScores: { exitExam, writenExam, practiceExam } },
+      { new: true, runValidators: true }
     );
 
-    // Fetch the updated student data
-    //const updatedStudent = await Student.findOne({ where: { id: id } });
-
     if (!updatedStudent) {
-      return res.status(404).json({
-        status: "error",
-        message: "Student not found",
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
-    console.log("exitExa: ", req);
+    //console.log("updatedStudent:", updatedStudent);
+
     res.status(200).json({
       status: "success",
       message: "Grade updated successfully",
-      data: updatedStudent, // Return the updated student data
+      data: updatedStudent,
     });
   } catch (error) {
     console.error("Error updating grade:", error);

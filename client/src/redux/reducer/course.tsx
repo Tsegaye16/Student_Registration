@@ -40,7 +40,11 @@ const courseSlice = createSlice({
         );
       })
       .addCase(updateCourse.fulfilled, (state, action) => {
-        state.courseData = action.payload;
+        const updatedCourse = action.payload.course;
+        console.log("action.payload: ", action.payload);
+        state.courseData = state.courseData.map((course: any) =>
+          course._id === updatedCourse.id ? updateCourse : course
+        );
       });
   },
 });

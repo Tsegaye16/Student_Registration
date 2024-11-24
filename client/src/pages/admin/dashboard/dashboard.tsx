@@ -74,8 +74,8 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  const user = useSelector((state: any) => state.user?.userData?.newUser);
-
+  const user = useSelector((state: any) => state.user?.userData?.user);
+  console.log("user: ", user);
   useEffect(() => {
     if (!token) {
       navigate("/");

@@ -39,8 +39,9 @@ const gradeSlice = createSlice({
 
         // Find the index of the grade with the matching id
         const index = state.grade.findIndex(
-          (grade: any) => grade.id === updatedGrade.id
+          (grade: any) => grade._id === updatedGrade.id
         );
+        console.log("Index: ", index);
         if (index !== -1) {
           // Update the grade entry with the new data
           state.grade[index] = {

@@ -27,7 +27,7 @@ const { Title } = Typography;
 interface UserType {
   name: string;
   email: string;
-  id: string;
+  _id: string;
   image?: string;
 }
 
@@ -88,7 +88,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
     }
 
     const response = await dispatch(
-      updateProfile({ id: user.id, data: formData }) as any
+      updateProfile({ id: user._id, data: formData }) as any
     );
 
     if (response?.payload) {

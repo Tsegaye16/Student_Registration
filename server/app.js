@@ -5,7 +5,6 @@ import router from "./routes/userRout.js";
 const app = express();
 // Serve the uploaded images statically
 app.use(express.static("uploads"));
-
 app.use(express.json());
 
 app.use(

@@ -9,7 +9,7 @@ const { Option } = Select;
 const { Title } = Typography;
 
 interface Props {
-  courseInfo: { id: string; name: string; duration: string; price: string };
+  courseInfo: { _id: string; name: string; duration: string; price: string };
   onSave: any;
 }
 
@@ -60,7 +60,7 @@ const EditCourse: React.FC<Props> = ({ courseInfo, onSave }) => {
     };
 
     const response = await dispatch(
-      updateCourse({ id: courseInfo.id, data: updatedData }) as any
+      updateCourse({ id: courseInfo._id, data: updatedData }) as any
     );
 
     if (response?.payload?.message) {

@@ -112,7 +112,7 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
   const handleProfileUpdate = (values: any) => {
     setStudent({ ...student, ...values });
   };
-
+  console.log("Student: ", student);
   const handleinputChange = (e: any) => {
     const { name, value } = e.target;
     setStudent({ ...student, [name]: value });
@@ -146,7 +146,7 @@ const StudentDetail: React.FC<propType> = ({ studentInfo, onback }) => {
   const handleSave = async () => {
     console.log("All changes saved", student);
     const response = await dispatch(
-      updateStudent({ id: studentInfo.id, data: student }) as any
+      updateStudent({ id: studentInfo._id, data: student }) as any
     );
     console.log("response::: ", response);
     if (response?.payload?.message) {

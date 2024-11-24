@@ -1,35 +1,30 @@
-import { Sequelize, DataTypes, UUID, UUIDV4 } from "sequelize";
+import mongoose from "mongoose";
 
-import { sequelize } from "../db.js";
+const courseSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please insert course name"], // Custom error message
+      unique: true, // Enforces unique course names
+      trim: true, // Removes extra spaces
+    },
+    duration: {
+      type: String,
+      required: [true, "Please insert course duration"],
+      trim: true,
+    },
+    price: {
+      type: String, // Use String for price if flexibility is required, or use Number for validation
+      required: [true, "Please insert course price"],
+      trim: true,
+    },
+  },
+  {
+    timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
+  }
+);
 
-const Course = sequelize.define("Course", {
-  id: {
-    type: UUID,
-    defaultValue: UUIDV4,
-    primaryKey: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: { msg: "Please insert course name" },
-    },
-    unique: true,
-  },
-  duration: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: { msg: "Please insert course duration" },
-    },
-  },
-  price: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: { msg: "Please insert course price" },
-    },
-  },
-});
+// Compile the schema into a model
+const Course = mongoose.model("Course", courseSchema);
 
 export default Course;

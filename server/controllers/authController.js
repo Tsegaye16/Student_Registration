@@ -1,9 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import user from "../models/userModel.js";
-
-const secret = "this_is-my-secrete_password/for$node*mailer";
+import User from "../models/userModel.js";
+import mongoose from "mongoose";
 
 const transporter = nodemailer.createTransport({
   service: "gmail", // You can use any email service provider (e.g., SendGrid, Mailgun)
@@ -15,30 +14,31 @@ const transporter = nodemailer.createTransport({
 
 export const signup = async (req, res) => {
   try {
-    const tokenExpirationTime = process.env.TOKEN_EXPIRATION_TIME; // 1 hour in milliseconds
+    const tokenExpirationTime = process.env.TOKEN_EXPIRATION_TIME || "1h"; // Default to 1 hour
     const { name, email, password } = req.body;
 
-    // Check if user with the given email already exists
-    const oldUser = await user.findOne({ where: { email: email } });
+    // Check if a user with the given email already exists
+    const oldUser = await User.findOne({ email });
 
     if (oldUser) {
       // If the user exists but hasn't confirmed their email
       if (!oldUser.isConfirmed) {
-        const currentTime = new Date().getTime();
-        const createdAtTime = new Date(oldUser.createdAt).getTime(); // Get the creation time of the user
+        const currentTime = Date.now();
+        const createdAtTime = new Date(oldUser.createdAt).getTime(); // Get the user's creation time
 
         // Check if the token (based on creation time) has expired
-        if (currentTime - createdAtTime < tokenExpirationTime) {
+        if (currentTime - createdAtTime < 60 * 60 * 1000) {
+          // 1 hour in milliseconds
           return res.status(400).json({
             message:
               "A confirmation email has already been sent. Please check your inbox and confirm your email.",
           });
         }
 
-        // Generate a new token if the old one (based on createdAt) has expired
+        // Generate a new token if the old one has expired
         const token = jwt.sign(
-          { email: oldUser.email, id: oldUser.id },
-          secret,
+          { email: oldUser.email, id: oldUser._id },
+          process.env.JWT_SECRET,
           {
             expiresIn: tokenExpirationTime, // Token valid for 1 hour
           }
@@ -63,15 +63,15 @@ export const signup = async (req, res) => {
 
       return res
         .status(400)
-        .json({ message: "User already exists and confirmed." });
+        .json({ message: "User already exists and is confirmed." });
     }
 
     // Create new user if no existing user with the email
-    const token = jwt.sign({ email, id: name }, secret, {
-      expiresIn: tokenExpirationTime, // Token valid for 1 hour
+    const token = jwt.sign({ email, id: name }, process.env.JWT_SECRET, {
+      expiresIn: tokenExpirationTime,
     });
 
-    const result = await user.create({
+    const newUser = await User.create({
       email,
       password,
       name,
@@ -91,7 +91,7 @@ export const signup = async (req, res) => {
 
     res.status(201).json({
       message: "You have successfully registered. Please confirm your email.",
-      result,
+      result: newUser,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -103,26 +103,27 @@ export const confirmEmail = async (req, res) => {
 
   try {
     // Verify the token
-    const decodedData = jwt.verify(token, secret);
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Find the user by email and mark email as confirmed
-    const existingUser = await user.findOne({
-      where: { email: decodedData.email },
-    });
+    // Find the user by email
+    const existingUser = await User.findOne({ email: decodedData.email });
 
     if (!existingUser) {
       return res.status(400).json({ message: "Invalid confirmation link" });
     }
 
-    // Mark the user as confirmed (you may want to add a field like 'isConfirmed' in the user model)
-    const data = await user.update(
-      { isConfirmed: true },
-      { where: { email: decodedData.email } }
-    );
+    // Check if the user is already confirmed
+    if (existingUser.isConfirmed) {
+      return res
+        .status(400)
+        .json({ message: "Email has already been confirmed." });
+    }
 
-    res
-      .status(200)
-      .json({ data: data, message: "Email confirmed successfully" });
+    // Mark the user as confirmed
+    existingUser.isConfirmed = true;
+    await existingUser.save();
+
+    res.status(200).json({ message: "Email confirmed successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -132,27 +133,37 @@ export const signin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const oldUser = await user.findOne({ where: { email: email } }); // FIX: ensure correct email query
+    // Find the user by email
+    const oldUser = await User.findOne({ email });
 
     if (!oldUser) {
       return res.status(404).json({ message: "User doesn't exist" });
     }
 
+    // Compare the entered password with the hashed password in the database
     const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
 
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-    // check whether it is verified or not
-    if (oldUser.isConfirmed === false) {
+
+    // Check if the user's email is confirmed
+    if (!oldUser.isConfirmed) {
       return res.status(400).json({ message: "Email is not verified" });
     }
 
-    const token = jwt.sign({ email: oldUser.email, id: oldUser.id }, secret, {
-      expiresIn: "1h",
-    });
+    // Generate a JWT token
+    const token = jwt.sign(
+      { email: oldUser.email, id: oldUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-    res.status(200).json({ message: "Successfully loged in!", token, oldUser });
+    res.status(200).json({
+      message: "Successfully logged in!",
+      token,
+      user: oldUser,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -162,21 +173,20 @@ export const getUserById = async (req, res) => {
   try {
     const id = req.params.userId;
 
-    // Ensure the id is a valid number
-    //const parsedId = parseInt(id, 10);
+    // Validate MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
 
-    const newUser = await user.findByPk(id);
+    const user = await User.findById(id);
 
-    if (!newUser) {
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Respond with the user data
-    res.status(200).json({ message: "success", newUser });
+    res.status(200).json({ message: "success", user });
   } catch (error) {
-    console.error(err);
-
-    // Respond with a generic error message
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -185,21 +195,33 @@ export const edditProfile = async (req, res) => {
   try {
     const { name, email } = req.body;
     const id = req.params.id;
-    const image = req.file?.filename;
-    // 1. get user bay id
-    const updatingUser = await user.findByPk(id);
-    // 2. if user does not exist return
-    if (!updatingUser) {
+    const image = req.file?.filename; // Assuming image is uploaded and handled by a middleware
+    console.log("ID: ", id);
+    // Validate MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // 1. Fetch the user by ID
+    const user = await User.findById(id);
+
+    // 2. If user does not exist, return error
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    // 3. update user
-    updatingUser.name = name || updatingUser.name;
-    updatingUser.email = email || updatingUser.email;
-    updatingUser.image = image || updatingUser.image;
-    // 4. save user
-    const saved = await updatingUser.save();
-    // 5. return user
-    res.status(200).json({ message: "success", user: saved });
+
+    // 3. Update the user fields
+    user.name = name || user.name;
+    user.email = email || user.email;
+    user.image = image || user.image;
+
+    // 4. Save the updated user
+    const updatedUser = await user.save();
+
+    // 5. Return the updated user
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
@@ -210,28 +232,31 @@ export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword, email } = req.body;
 
-    // 1. Fetch user based on email
-    const updatingUser = await user.findOne({ where: { email } });
+    // 1. Fetch the user based on email
+    const user = await User.findOne({ email });
 
-    // 2. If user does not exist, return an error
-    if (!updatingUser) {
+    // 2. If user does not exist, return error
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // 3. Check if the current password is correct
-    const isValidPassword = await updatingUser.comparePassword(currentPassword);
+    const isValidPassword = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
     if (!isValidPassword) {
       return res.status(401).json({ message: "Invalid current password" });
     }
 
     // 4. Hash the new password and update it
-    updatingUser.password = await bcrypt.hash(newPassword, 12);
-    await updatingUser.save();
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
 
     // 5. Return success response
-    return res.status(200).json({ message: "Password updated successfully" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Error updating password" });
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating password" });
   }
 };
