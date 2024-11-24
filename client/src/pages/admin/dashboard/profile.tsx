@@ -149,7 +149,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                   <Avatar
                     src={
                       typeof userData.image === "string"
-                        ? `http://localhost:4000/${userData.image}`
+                        ? `https://student-registration-sw2j.onrender.com/${userData.image}`
                         : URL.createObjectURL(userData.image)
                     }
                     size={100}

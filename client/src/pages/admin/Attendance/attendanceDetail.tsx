@@ -15,7 +15,7 @@ const AttendanceDetail: React.FC<PropType> = ({ record }) => {
   const dispatch = useDispatch();
   const student = useSelector((state: any) => state.student?.selectedStudent);
   const courses = useSelector((state: any) => state.course?.courseData);
-
+  console.log("recored: ", record);
   const courseDuration = student?.course
     ? courses.find((course: any) => course?.name === student.course)?.duration
     : null;

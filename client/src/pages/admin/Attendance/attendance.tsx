@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 const { Text } = Typography;
 
 interface Student {
-  id: string;
+  _id: string;
   name: string;
   attendance: { date: string; status: "present" | "absent" }[];
   // startDate:any
@@ -27,7 +27,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
   //console.log("Filtered: ", filtered);
   const { t } = useTranslation();
 
-  //console.log("Students: ", students);
+  //console.log("Studentssss: ", students);
 
   const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const [attendanceData, setAttendanceData] = useState<{
@@ -63,7 +63,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
             attendanceRecord?.status === "present" || false;
         });
 
-        initialAttendance[student.id] = studentAttendance;
+        initialAttendance[student._id] = studentAttendance;
       });
       setAttendanceData(initialAttendance);
       setInitialData(initialAttendance); // Store the initial state for reset
@@ -103,7 +103,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
         date: today,
         status: "present", // Only send present status for checked students
       }));
-    console.log("Present Data: ", formattedData);
+    //console.log("Present Data: ", formattedData);
     // Add absent students for today's date if they are not checked
     const absentStudentsData = Object.entries(attendanceData)
       .filter(([studentId, days]) => !days[weekdays[todayIndex]]) // Keep only unchecked students
@@ -151,12 +151,12 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
         title: `${t(day)}`,
         key: day,
         render: (_: any, record: Student) => {
-          const isChecked = attendanceData[record.id]?.[day] ?? false;
-          //console.log("Record", attendanceData[record.id]);
+          const isChecked = attendanceData[record._id]?.[day] ?? false;
+
           return (
             <Checkbox
               checked={isChecked}
-              onChange={() => handleCheckboxChange(record.id, day)}
+              onChange={() => handleCheckboxChange(record._id, day)}
               disabled={!isToday} // Disable if the day is not today
             />
           );
@@ -172,6 +172,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
             type="link"
             onClick={(event) => {
               event.stopPropagation();
+
               onDetailClick(text);
             }}
           >
@@ -185,8 +186,8 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
 
   // Map students to table rows
   const data: any = students?.map((student) => ({
-    key: student.id,
-    id: student.id,
+    key: student._id,
+    id: student._id,
     name: student.name,
   }));
 

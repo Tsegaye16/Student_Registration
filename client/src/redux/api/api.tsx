@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:4000/user",
+  baseURL: "https://student-registration-sw2j.onrender.com/user",
 });
 
 // User Authentication

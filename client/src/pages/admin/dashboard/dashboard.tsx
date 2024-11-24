@@ -264,7 +264,7 @@ const Dashboard = () => {
               </Select>
               <Dropdown overlay={menu} trigger={["click"]}>
                 <Avatar
-                  src={`http://localhost:4000/${user?.image}`}
+                  src={`https://student-registration-sw2j.onrender.com/${user?.image}`}
                   style={{ cursor: "pointer" }}
                 />
               </Dropdown>
