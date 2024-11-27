@@ -36,7 +36,7 @@ const courseSlice = createSlice({
 
         // Return a new array reference for reactivity
         state.courseData = state.courseData.filter(
-          (course: any) => !deletedIds.includes(course.id)
+          (course: any) => !deletedIds.includes(course._id)
         );
       })
       .addCase(updateCourse.fulfilled, (state, action) => {

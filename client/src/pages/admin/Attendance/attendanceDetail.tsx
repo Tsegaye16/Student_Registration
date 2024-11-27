@@ -8,21 +8,21 @@ import { getAllCourse } from "../../../redux/action/course";
 const { Text, Title } = Typography;
 
 interface PropType {
-  record: { id: string };
+  record: any;
 }
 
 const AttendanceDetail: React.FC<PropType> = ({ record }) => {
   const dispatch = useDispatch();
   const student = useSelector((state: any) => state.student?.selectedStudent);
   const courses = useSelector((state: any) => state.course?.courseData);
-  console.log("recored: ", record);
+  console.log("student: ", student);
   const courseDuration = student?.course
     ? courses.find((course: any) => course?.name === student.course)?.duration
     : null;
   const [currentMonth, setCurrentMonth] = useState(dayjs());
 
   useEffect(() => {
-    dispatch(getStudentById(record.id) as any);
+    dispatch(getStudentById(record._id) as any);
     dispatch(getAllCourse() as any);
   }, [dispatch, record.id]);
 
@@ -107,7 +107,7 @@ const AttendanceDetail: React.FC<PropType> = ({ record }) => {
 
   return (
     <div style={{ padding: "24px" }}>
-      <Title level={4}>{student?.name}'s Attendance</Title>
+      <Title level={4}>{record?.name}'s Attendance</Title>
       <Text>Starting from: {startDate.format("MMMM YYYY")}</Text>
 
       <div

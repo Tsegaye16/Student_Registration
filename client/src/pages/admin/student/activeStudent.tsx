@@ -54,7 +54,7 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
         <Space size="middle">
           <Popconfirm
             title={t("Are you sure you want to delete this student?")}
-            onConfirm={() => confirmDelete([record.id])} // Send single ID in an array
+            onConfirm={() => confirmDelete([record._id])} // Send single ID in an array
             okText={t("Yes")}
             cancelText={t("No")}
           >
@@ -94,11 +94,21 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
       <div
         style={{
           display: "flex",
+          flexWrap: "wrap", // Allows wrapping for smaller screens
           justifyContent: "space-between",
+          alignItems: "center",
+          gap: "16px", // Adds spacing for wrapped items
           marginBottom: "16px",
         }}
       >
-        <Title level={5}>{t("Student List")}</Title>
+        <Title
+          level={5}
+          style={{
+            margin: 0, // Removes margin to maintain alignment
+          }}
+        >
+          {t("Student List")}
+        </Title>
 
         <Button
           type="primary"
@@ -106,6 +116,10 @@ const ActiveStudent: React.FC<props> = ({ onAddStudent, onDetailStudent }) => {
           onClick={(event) => {
             event.stopPropagation();
             onAddStudent(true);
+          }}
+          style={{
+            minWidth: "150px", // Ensures the button maintains a usable size
+            fontSize: "14px", // Adjusts text size for readability
           }}
         >
           {t("Register student")}

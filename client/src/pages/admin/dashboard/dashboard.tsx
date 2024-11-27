@@ -44,7 +44,7 @@ const { Option } = Select;
 
 const Dashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("Dashboard");
+  const [selectedItem, setSelectedItem] = useState("Active");
   const [isStudentsOpen, setIsStudentsOpen] = useState(false);
   const [selectedAddCourse, setSelectedAddCourse] = useState(false);
   const [selectEditCourse, setSelectEditCourse] = useState<any>({
@@ -188,9 +188,9 @@ const Dashboard = () => {
           mode="inline"
           onClick={({ key }) => handleMenuItemClick(key)}
         >
-          <Menu.Item key="Dashboard" icon={<DashboardOutlined />}>
+          {/* <Menu.Item key="Dashboard" icon={<DashboardOutlined />}>
             {t("dashboard")}
-          </Menu.Item>
+          </Menu.Item> */}
 
           <Menu.SubMenu
             key="Students"
@@ -205,9 +205,9 @@ const Dashboard = () => {
             >
               {t("Active Student")}
             </Menu.Item>
-            <Menu.Item key="Graduated" icon={<TrophyOutlined />}>
+            {/* <Menu.Item key="Graduated" icon={<TrophyOutlined />}>
               {t("Graduated Student")}
-            </Menu.Item>
+            </Menu.Item> */}
           </Menu.SubMenu>
           <Menu.Item key="Attendance" icon={<ClockCircleOutlined />}>
             {t("Attendance")}

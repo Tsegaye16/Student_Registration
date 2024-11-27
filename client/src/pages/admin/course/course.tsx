@@ -83,7 +83,7 @@ const Course: React.FC<propType> = ({ onAddCourse, onEditCourse }) => {
           </Button>
           <Popconfirm
             title={t("Are you sure you want to delete this course?")}
-            onConfirm={() => confirmDelete([record.id])} // Send single ID in an array
+            onConfirm={() => confirmDelete([record._id])} // Send single ID in an array
             okText={t("Yes")}
             cancelText={t("No")}
           >

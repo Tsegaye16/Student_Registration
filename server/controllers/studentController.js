@@ -99,7 +99,7 @@ export const updateStudent = async (req, res) => {
 export const markAttendance = async (req, res) => {
   try {
     const attendanceData = req.body;
-
+    console.log("attendanceData: ", attendanceData);
     const updatePromises = attendanceData.map(async (attendance) => {
       const student = await Student.findById(attendance.studentId);
 

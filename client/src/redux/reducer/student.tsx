@@ -57,7 +57,7 @@ const studentSlice = createSlice({
       .addCase(deleteStudent.fulfilled, (state, action: any) => {
         const deletedIds = action.meta.arg;
         state.studentData = state.studentData.filter(
-          (student: any) => !deletedIds.includes(student.id)
+          (student: any) => !deletedIds.includes(student._id)
         );
       })
       .addCase(updateStudent.fulfilled, (state, action: any) => {

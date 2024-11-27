@@ -1,7 +1,10 @@
 import axios from "axios";
-
+const isLocal = window.location.hostname === "localhost";
+console.log(process.env.REACT_APP_LOCAL_API_BASE_URL);
 const API = axios.create({
-  baseURL: "https://student-registration-sw2j.onrender.com/user",
+  baseURL: isLocal
+    ? process.env.REACT_APP_LOCAL_API_BASE_URL
+    : process.env.REACT_APP_PROD_API_BASE_URL,
 });
 
 // User Authentication

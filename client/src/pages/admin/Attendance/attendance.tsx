@@ -20,11 +20,12 @@ interface propType {
 
 const Attendance: React.FC<propType> = ({ onDetailClick }) => {
   const dispatch = useDispatch();
-  const students = useSelector(
+  const rowData = useSelector(
     (state: any) => state.student?.studentData
   ) as Student[];
+  const students = rowData.filter((student: any) => student.startDate !== null);
 
-  //console.log("Filtered: ", filtered);
+  console.log("students: ", students);
   const { t } = useTranslation();
 
   //console.log("Studentssss: ", students);
@@ -71,7 +72,8 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
   }, [students]);
 
   // Toggle attendance for a specific student and day
-  const handleCheckboxChange = (studentId: string, day: string) => {
+  const handleCheckboxChange = (studentId: any, day: string) => {
+    console.log("Day: ", studentId);
     setAttendanceData((prevData) => {
       const updatedData = {
         ...prevData,
@@ -80,6 +82,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
           [day]: !prevData[studentId][day],
         },
       };
+      // console.log("updatedData: ", updatedData);
       setIsDirty(true); // Mark changes as dirty
       return updatedData;
     });
@@ -173,7 +176,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
             onClick={(event) => {
               event.stopPropagation();
 
-              onDetailClick(text);
+              onDetailClick(record);
             }}
           >
             {" "}
@@ -185,20 +188,16 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
   ];
 
   // Map students to table rows
-  const data: any = students?.map((student) => ({
-    key: student._id,
-    id: student._id,
-    name: student.name,
-  }));
 
   return (
     <div style={{ padding: "20px" }}>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={students}
         pagination={false}
         bordered
         title={() => t("Weekly Attendance")}
+        scroll={{ x: "max-content" }}
       />
 
       <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>

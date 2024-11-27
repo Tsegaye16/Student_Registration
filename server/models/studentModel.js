@@ -38,7 +38,12 @@ const studentSchema = new mongoose.Schema(
       default: 0.0,
     },
     attendance: {
-      type: [String], // Array of strings for attendance data
+      type: [
+        {
+          date: { type: String, required: true }, // Date as a string (e.g., "YYYY-MM-DD")
+          status: { type: String, required: true, enum: ["present", "absent"] },
+        },
+      ],
       default: [], // Initialize as an empty array
     },
     examScores: {
