@@ -20,15 +20,14 @@ interface propType {
 
 const Attendance: React.FC<propType> = ({ onDetailClick }) => {
   const dispatch = useDispatch();
-  const rowData = useSelector(
+  const students = useSelector(
     (state: any) => state.student?.studentData
   ) as Student[];
-  const students = rowData.filter((student: any) => student.startDate !== null);
 
-  console.log("students: ", students);
+  //console.log("Filtered: ", filtered);
   const { t } = useTranslation();
 
-  //console.log("Studentssss: ", students);
+  //console.log("Students: ", students);
 
   const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const [attendanceData, setAttendanceData] = useState<{
@@ -72,8 +71,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
   }, [students]);
 
   // Toggle attendance for a specific student and day
-  const handleCheckboxChange = (studentId: any, day: string) => {
-    console.log("Day: ", studentId);
+  const handleCheckboxChange = (studentId: string, day: string) => {
     setAttendanceData((prevData) => {
       const updatedData = {
         ...prevData,
@@ -82,7 +80,6 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
           [day]: !prevData[studentId][day],
         },
       };
-      // console.log("updatedData: ", updatedData);
       setIsDirty(true); // Mark changes as dirty
       return updatedData;
     });
@@ -106,7 +103,6 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
         date: today,
         status: "present", // Only send present status for checked students
       }));
-    //console.log("Present Data: ", formattedData);
     // Add absent students for today's date if they are not checked
     const absentStudentsData = Object.entries(attendanceData)
       .filter(([studentId, days]) => !days[weekdays[todayIndex]]) // Keep only unchecked students
@@ -118,6 +114,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
 
     // Combine present and absent student data
     const finalDataToSend = [...formattedData, ...absentStudentsData];
+    console.log("finalDataToSend : ", finalDataToSend);
     const response = await dispatch(markAttendance(finalDataToSend) as any);
     if (response?.payload?.message) {
       message.success(`${response?.payload?.message}`);
@@ -155,7 +152,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
         key: day,
         render: (_: any, record: Student) => {
           const isChecked = attendanceData[record._id]?.[day] ?? false;
-
+          //console.log("Record", attendanceData[record.id]);
           return (
             <Checkbox
               checked={isChecked}
@@ -175,8 +172,7 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
             type="link"
             onClick={(event) => {
               event.stopPropagation();
-
-              onDetailClick(record);
+              onDetailClick(text);
             }}
           >
             {" "}
@@ -197,7 +193,6 @@ const Attendance: React.FC<propType> = ({ onDetailClick }) => {
         pagination={false}
         bordered
         title={() => t("Weekly Attendance")}
-        scroll={{ x: "max-content" }}
       />
 
       <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
